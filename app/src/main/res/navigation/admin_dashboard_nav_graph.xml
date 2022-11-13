@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/admin_dashboard_nav_graph"
+    app:startDestination="@id/adminOverviewFragment">
+
+    <fragment
+        android:id="@+id/adminOverviewFragment"
+        android:name="hu.bme.vik.aut.ui.admindashboard.fragments.AdminOverviewFragment"
+        android:label="@string/admin_overview_menu_item_title"
+        tools:layout="@layout/fragment_admin_overview" >
+        <action
+            android:id="@+id/action_adminOverviewFragment_to_adminResidentsFragment"
+            app:destination="@id/adminResidentsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/adminOverviewFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_adminOverviewFragment_to_adminSupplyFragment"
+            app:destination="@id/adminSupplyFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/adminOverviewFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/adminResidentsFragment"
+        android:name="hu.bme.vik.aut.ui.admindashboard.fragments.AdminResidentsFragment"
+        android:label="@string/admin_residents_menu_item_title"
+        tools:layout="@layout/fragment_admin_residents" >
+        <action
+            android:id="@+id/action_adminResidentsFragment_to_adminSupplyFragment"
+            app:destination="@id/adminSupplyFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/adminResidentsFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_adminResidentsFragment_to_adminOverviewFragment"
+            app:destination="@id/adminOverviewFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/adminResidentsFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/adminSupplyFragment"
+        android:name="hu.bme.vik.aut.ui.admindashboard.fragments.AdminSupplyFragment"
+        android:label="@string/admin_supply_menu_item_title"
+        tools:layout="@layout/fragment_admin_supply" >
+        <action
+            android:id="@+id/action_adminSupplyFragment_to_adminResidentsFragment"
+            app:destination="@id/adminResidentsFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/adminSupplyFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_adminSupplyFragment_to_adminOverviewFragment"
+            app:destination="@id/adminOverviewFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/adminSupplyFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+</navigation>

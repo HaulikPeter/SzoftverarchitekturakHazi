@@ -9,6 +9,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuarantineCalorieCalc">
         <activity
+            android:name=".ui.admindashboard.AdminDashboardActivity"
+            android:exported="false"
+            android:label="@string/title_activity_admin_dashboard"
+            android:theme="@style/Theme.QuarantineCalorieCalc">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".ui.login.LoginActivity"
             android:exported="true"
             android:label="@string/app_name">

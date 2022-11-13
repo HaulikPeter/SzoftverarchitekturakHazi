@@ -9,4 +9,13 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="title_activity_admin_dashboard">Admin Dashboard</string>
+    <string name="admin_overview_menu_item_title">Overview</string>
+    <string name="admin_residents_menu_item_title">Residents</string>
+    <string name="admin_supply_menu_item_title">Supply</string>
+    <string name="admin_overview_fragment_title">Overview</string>
+    <string name="admin_residents_fragment_title">Residents</string>
+    <string name="admin_supply_fragment_title">Supply</string>
+    <string name="test_admin_panel">Test Admin Dashboard</string>
+
 </resources>

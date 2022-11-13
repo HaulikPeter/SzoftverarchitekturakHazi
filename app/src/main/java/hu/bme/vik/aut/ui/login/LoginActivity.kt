@@ -1,6 +1,7 @@
 package hu.bme.vik.aut.ui.login
 
 import android.app.Activity
+import android.content.Intent
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -15,6 +16,7 @@ import android.widget.Toast
 import hu.bme.vik.aut.databinding.ActivityLoginBinding
 
 import hu.bme.vik.aut.R
+import hu.bme.vik.aut.ui.admindashboard.AdminDashboardActivity
 
 class LoginActivity : AppCompatActivity() {
 
@@ -31,6 +33,11 @@ class LoginActivity : AppCompatActivity() {
         val password = binding.password
         val login = binding.login
         val loading = binding.loading
+        val adminDasboardTestButton = binding.adminDashboardTestButton
+        adminDasboardTestButton?.setOnClickListener{
+            val intent = Intent(this, AdminDashboardActivity::class.java)
+            startActivity(intent)
+        }
 
         loginViewModel = ViewModelProvider(this, LoginViewModelFactory())
                 .get(LoginViewModel::class.java)
