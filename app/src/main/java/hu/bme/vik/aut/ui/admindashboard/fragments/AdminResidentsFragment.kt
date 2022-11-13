@@ -5,9 +5,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import hu.bme.vik.aut.R
-import hu.bme.vik.aut.databinding.FragmentAdminOverviewBinding
+import android.widget.ProgressBar
+import androidx.recyclerview.widget.LinearLayoutManager
 import hu.bme.vik.aut.databinding.FragmentAdminResidentsBinding
+import hu.bme.vik.aut.ui.admindashboard.adapters.ResidentsList.ResidentsListRecyclerViewAdapter
+import hu.bme.vik.aut.ui.admindashboard.data.Resident
+import hu.bme.vik.aut.ui.admindashboard.data.ResidentStatus
+import kotlin.concurrent.thread
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -25,6 +29,8 @@ class AdminResidentsFragment : Fragment() {
     private var param2: String? = null
 
     lateinit var binding: FragmentAdminResidentsBinding
+    lateinit var residentsRecyclerViewAdapter: ResidentsListRecyclerViewAdapter
+    lateinit var loadingProgressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,9 +46,31 @@ class AdminResidentsFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentAdminResidentsBinding.inflate(inflater, container, false)
+        loadingProgressBar = binding.residentsLoadingProgressBar
+        loadingProgressBar.visibility = View.VISIBLE
+        val residentsListRecyclerView = binding.residentsRecyclerView
+
+        residentsRecyclerViewAdapter = ResidentsListRecyclerViewAdapter(requireContext())
+        residentsListRecyclerView.adapter = residentsRecyclerViewAdapter
+        residentsListRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        loadResidents()
         return binding.root
     }
 
+    private fun loadResidents() {
+        thread {
+            val residents: List<Resident> = listOf(Resident(name = "Bruce Willis", status = ResidentStatus.HEALTHY),
+                Resident(name = "Helen Mirren", status = ResidentStatus.SICK),
+                Resident(name = "John Malkovich", status = ResidentStatus.SICK),
+                Resident(name = "Morgan Freeman", status = ResidentStatus.HEALTHY))
+                Thread.sleep(1000)
+            requireActivity().runOnUiThread {
+                residentsRecyclerViewAdapter.addResidents(residents)
+                loadingProgressBar.visibility = View.GONE
+            }
+        }
+    }
     companion object {
         /**
          * Use this factory method to create a new instance of

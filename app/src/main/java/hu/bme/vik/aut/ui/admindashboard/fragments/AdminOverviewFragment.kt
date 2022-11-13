@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import hu.bme.vik.aut.R
-import hu.bme.vik.aut.databinding.ActivityAdminDashboardBinding
+
 import hu.bme.vik.aut.databinding.FragmentAdminOverviewBinding
 
 // TODO: Rename parameter arguments, choose names that match
