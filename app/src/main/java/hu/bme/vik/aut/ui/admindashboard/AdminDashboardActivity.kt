@@ -2,21 +2,21 @@ package hu.bme.vik.aut.ui.admindashboard
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import hu.bme.vik.aut.R
 import hu.bme.vik.aut.databinding.ActivityAdminDashboardBinding
 import hu.bme.vik.aut.ui.admindashboard.fragments.AdminOverviewFragment
 import hu.bme.vik.aut.ui.admindashboard.fragments.AdminResidentsFragment
 import hu.bme.vik.aut.ui.admindashboard.fragments.AdminSupplyFragment
-import kotlin.math.log
 
 class AdminDashboardActivity : AppCompatActivity() {
     // code created with help from: https://www.geeksforgeeks.org/bottom-navigation-bar-in-android/
     lateinit var binding:  ActivityAdminDashboardBinding
     lateinit var navController: NavController
+    lateinit var floatingActionButton: FloatingActionButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAdminDashboardBinding.inflate(layoutInflater)
@@ -29,33 +29,55 @@ class AdminDashboardActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.navigation_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
+        floatingActionButton = binding.floatingActionButton
+
         bottomNavigationBar.setOnItemSelectedListener {
             if (bottomNavigationBar.selectedItemId == it.itemId) {
                 false
             } else {
-                navigateToFragment(getFragmentNameForMenuItemId(bottomNavigationBar.selectedItemId), getFragmentNameForMenuItemId(it.itemId))
+                navigateToFragment(getFragmentIdForMenuItemId(bottomNavigationBar.selectedItemId), getFragmentIdForMenuItemId(it.itemId))
                 true
             }
         }
 
+
+
+
+
         setContentView(binding.root)
     }
 
-    private fun navigateToFragment(currentFragmentName: String, nextFragmentName: String) {
-        val navigationName = "action_${currentFragmentName}_to_${nextFragmentName}"
-        Log.d("ANYAD", navigationName)
-        val navigationId = resources.getIdentifier(navigationName,"id",packageName)
-        Log.d("ANYAD", "$navigationId")
-        navController.navigate(navigationId)
-    }
+    private fun navigateToFragment(currentFragmentId: Int, nextFragmentId: Int) {
+        val currentFragmentName = resources.getResourceEntryName(currentFragmentId)
+        val nextFragmentName = resources.getResourceEntryName(nextFragmentId)
 
-    private fun getFragmentNameForMenuItemId(menuItemId: Int): String {
-        return when (menuItemId) {
-            R.id.admin_overview_menu_item -> resources.getResourceEntryName(R.id.adminOverviewFragment)
-            R.id.admin_residents_menu_item -> resources.getResourceEntryName(R.id.adminResidentsFragment)
-            R.id.admin_supply_menu_item -> resources.getResourceEntryName(R.id.adminSupplyFragment)
-            else -> resources.getResourceEntryName(R.id.adminOverviewFragment)
+        val navigationName = "action_${currentFragmentName}_to_${nextFragmentName}"
+        val navigationId = resources.getIdentifier(navigationName,"id",packageName)
+
+        navController.navigate(navigationId)
+
+
+        if (getIsFabVisibileOnFragment(nextFragmentId)) {
+            floatingActionButton.show()
+        } else {
+            floatingActionButton.hide()
+        }
+
+    }
+    private fun getIsFabVisibileOnFragment(fragmentId: Int) : Boolean {
+        return when (fragmentId) {
+            R.id.adminOverviewFragment -> false
+            R.id.adminResidentsFragment -> true
+            R.id.adminSupplyFragment -> true
+            else -> false
         }
     }
-
+    private fun getFragmentIdForMenuItemId(menuItemId: Int): Int {
+        return when (menuItemId) {
+            R.id.admin_overview_menu_item -> R.id.adminOverviewFragment
+            R.id.admin_residents_menu_item -> R.id.adminResidentsFragment
+            R.id.admin_supply_menu_item -> R.id.adminSupplyFragment
+            else -> R.id.adminOverviewFragment
+        }
+    }
 }
