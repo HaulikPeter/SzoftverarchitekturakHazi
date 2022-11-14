@@ -23,7 +23,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [AdminResidentsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class AdminResidentsFragment : Fragment() {
+class AdminResidentsFragment : Fragment(), AddResidentDialogFragment.AddResidentDialogFragmentListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -64,10 +64,12 @@ class AdminResidentsFragment : Fragment() {
                 Resident(name = "Helen Mirren", status = ResidentStatus.SICK),
                 Resident(name = "John Malkovich", status = ResidentStatus.SICK),
                 Resident(name = "Morgan Freeman", status = ResidentStatus.HEALTHY))
-                Thread.sleep(1000)
-            requireActivity().runOnUiThread {
-                residentsRecyclerViewAdapter.addResidents(residents)
-                loadingProgressBar.visibility = View.GONE
+            Thread.sleep(1000)
+            if(this.isAdded) {
+                requireActivity().runOnUiThread {
+                    residentsRecyclerViewAdapter.addResidents(residents)
+                    loadingProgressBar.visibility = View.GONE
+                }
             }
         }
     }
@@ -87,7 +89,12 @@ class AdminResidentsFragment : Fragment() {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)
+
                 }
             }
+    }
+
+    override fun onResidentAdded(newResident: Resident) {
+        residentsRecyclerViewAdapter.addResident(newResident)
     }
 }

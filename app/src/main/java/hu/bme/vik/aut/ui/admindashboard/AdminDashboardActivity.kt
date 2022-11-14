@@ -2,11 +2,15 @@ package hu.bme.vik.aut.ui.admindashboard
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import hu.bme.vik.aut.R
 import hu.bme.vik.aut.databinding.ActivityAdminDashboardBinding
+import hu.bme.vik.aut.ui.admindashboard.data.Resident
+import hu.bme.vik.aut.ui.admindashboard.fragments.AddResidentDialogFragment
 import hu.bme.vik.aut.ui.admindashboard.fragments.AdminOverviewFragment
 import hu.bme.vik.aut.ui.admindashboard.fragments.AdminResidentsFragment
 import hu.bme.vik.aut.ui.admindashboard.fragments.AdminSupplyFragment
@@ -16,19 +20,17 @@ class AdminDashboardActivity : AppCompatActivity() {
     lateinit var binding:  ActivityAdminDashboardBinding
     lateinit var navController: NavController
     lateinit var floatingActionButton: FloatingActionButton
+    lateinit var navHostFragment: NavHostFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAdminDashboardBinding.inflate(layoutInflater)
         val bottomNavigationBar = binding.bottomNavBar
 
-        val overviewFragment = AdminOverviewFragment()
-        val residentsFragment = AdminResidentsFragment()
-        val supplyFragment = AdminSupplyFragment()
 
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.navigation_host_fragment) as NavHostFragment
+        navHostFragment = supportFragmentManager.findFragmentById(R.id.navigation_host_fragment) as NavHostFragment
+
         navController = navHostFragment.navController
-
         floatingActionButton = binding.floatingActionButton
 
         bottomNavigationBar.setOnItemSelectedListener {
@@ -39,10 +41,6 @@ class AdminDashboardActivity : AppCompatActivity() {
                 true
             }
         }
-
-
-
-
 
         setContentView(binding.root)
     }
@@ -58,6 +56,8 @@ class AdminDashboardActivity : AppCompatActivity() {
 
 
         if (getIsFabVisibileOnFragment(nextFragmentId)) {
+            floatingActionButton.setImageResource(getImageIdForFabOnFragment(nextFragmentId))
+            floatingActionButton.setOnClickListener(getOnClickListenerForFabOnFragment(nextFragmentId))
             floatingActionButton.show()
         } else {
             floatingActionButton.hide()
@@ -72,6 +72,26 @@ class AdminDashboardActivity : AppCompatActivity() {
             else -> false
         }
     }
+
+    private fun getOnClickListenerForFabOnFragment(fragmentId: Int) : (View) -> Unit {
+        Log.d("SZAR", navHostFragment.childFragmentManager.fragments.toString())
+        return when (fragmentId) {
+            R.id.adminResidentsFragment -> { _: View -> AddResidentDialogFragment(navHostFragment.childFragmentManager.fragments.first() as AdminResidentsFragment).show(this.supportFragmentManager, AddResidentDialogFragment.TAG) }
+            R.id.adminSupplyFragment -> { _: View -> {} }
+            else -> { _: View -> {} }
+        }
+    }
+
+    private fun getImageIdForFabOnFragment(fragmentId: Int) : Int {
+        return when (fragmentId) {
+            R.id.adminResidentsFragment -> R.drawable.ic_baseline_person_add_24
+            R.id.adminSupplyFragment -> R.drawable.ic_outline_add_24
+            else -> R.drawable.ic_outline_add_24
+        }
+    }
+
+
+
     private fun getFragmentIdForMenuItemId(menuItemId: Int): Int {
         return when (menuItemId) {
             R.id.admin_overview_menu_item -> R.id.adminOverviewFragment

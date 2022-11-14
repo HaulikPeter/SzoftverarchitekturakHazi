@@ -17,5 +17,12 @@
     <string name="admin_residents_fragment_title">Residents</string>
     <string name="admin_supply_fragment_title">Supply</string>
     <string name="test_admin_panel">Test Admin Dashboard</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_button_text">Add</string>
+    <string name="add_resident_dialog_title">Add resident to household</string>
+    <string name="resident_name_hint">Resident\'s name</string>
+    <string name="new_resident_enter_name_error">Resident name cannot be empty</string>
+    <string name="status_text">Status:</string>
 
 </resources>
