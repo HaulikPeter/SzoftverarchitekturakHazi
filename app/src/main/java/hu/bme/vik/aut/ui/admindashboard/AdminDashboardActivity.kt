@@ -10,10 +10,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import hu.bme.vik.aut.R
 import hu.bme.vik.aut.databinding.ActivityAdminDashboardBinding
 import hu.bme.vik.aut.ui.admindashboard.data.Resident
-import hu.bme.vik.aut.ui.admindashboard.fragments.AddResidentDialogFragment
-import hu.bme.vik.aut.ui.admindashboard.fragments.AdminOverviewFragment
-import hu.bme.vik.aut.ui.admindashboard.fragments.AdminResidentsFragment
-import hu.bme.vik.aut.ui.admindashboard.fragments.AdminSupplyFragment
+import hu.bme.vik.aut.ui.admindashboard.fragments.*
 
 class AdminDashboardActivity : AppCompatActivity() {
     // code created with help from: https://www.geeksforgeeks.org/bottom-navigation-bar-in-android/
@@ -74,10 +71,9 @@ class AdminDashboardActivity : AppCompatActivity() {
     }
 
     private fun getOnClickListenerForFabOnFragment(fragmentId: Int) : (View) -> Unit {
-        Log.d("SZAR", navHostFragment.childFragmentManager.fragments.toString())
         return when (fragmentId) {
             R.id.adminResidentsFragment -> { _: View -> AddResidentDialogFragment(navHostFragment.childFragmentManager.fragments.first() as AdminResidentsFragment).show(this.supportFragmentManager, AddResidentDialogFragment.TAG) }
-            R.id.adminSupplyFragment -> { _: View -> {} }
+            R.id.adminSupplyFragment -> { _: View ->  AddSupplyDialogFragment(navHostFragment.childFragmentManager.fragments.first() as AdminSupplyFragment).show(this.supportFragmentManager, AddSupplyDialogFragment.TAG)}
             else -> { _: View -> {} }
         }
     }
