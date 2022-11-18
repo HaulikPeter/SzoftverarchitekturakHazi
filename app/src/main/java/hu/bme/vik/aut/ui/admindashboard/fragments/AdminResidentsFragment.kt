@@ -6,7 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.*
+import com.google.firebase.ktx.Firebase
 import hu.bme.vik.aut.databinding.FragmentAdminResidentsBinding
 import hu.bme.vik.aut.ui.admindashboard.adapters.ResidentsList.ResidentsListRecyclerViewAdapter
 import hu.bme.vik.aut.ui.admindashboard.data.Resident
@@ -59,20 +63,44 @@ class AdminResidentsFragment : Fragment(), AddResidentDialogFragment.AddResident
     }
 
     private fun loadResidents() {
-        thread {
-            val residents: List<Resident> = listOf(Resident(name = "Bruce Willis", status = ResidentStatus.HEALTHY),
-                Resident(name = "Helen Mirren", status = ResidentStatus.SICK),
-                Resident(name = "John Malkovich", status = ResidentStatus.SICK),
-                Resident(name = "Morgan Freeman", status = ResidentStatus.HEALTHY))
-            Thread.sleep(1000)
-            if(this.isAdded) {
-                requireActivity().runOnUiThread {
-                    residentsRecyclerViewAdapter.addResidents(residents)
-                    loadingProgressBar.visibility = View.GONE
-                }
+        val user = Firebase.auth.currentUser!!
+        val db = FirebaseDatabase.getInstance().reference
+        db.child("users").child(user.uid).child("household_id").get()
+            .addOnSuccessListener {
+                fillUsersByHousehold(db, it.value.toString())
             }
-        }
     }
+
+    private fun fillUsersByHousehold(db: DatabaseReference, householdId: String) {
+        db.child("user").orderByChild("household_id").equalTo(householdId)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(user: DataSnapshot) {
+                    residentsRecyclerViewAdapter.addResident(
+                        Resident(
+                            user.child("display_name").value.toString(),
+                            ResidentStatus.valueOf(user.child("status").value.toString()))
+                    )
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(context, "Error loading residents", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+
+//        thread {
+//            val residents: List<Resident> = listOf(Resident(name = "Bruce Willis", status = ResidentStatus.HEALTHY),
+//                Resident(name = "Helen Mirren", status = ResidentStatus.SICK),
+//                Resident(name = "John Malkovich", status = ResidentStatus.SICK),
+//                Resident(name = "Morgan Freeman", status = ResidentStatus.HEALTHY))
+//            Thread.sleep(1000)
+//            if(this.isAdded) {
+//                requireActivity().runOnUiThread {
+//                    residentsRecyclerViewAdapter.addResidents(residents)
+//                    loadingProgressBar.visibility = View.GONE
+//                }
+//            }
+//        }
     companion object {
         /**
          * Use this factory method to create a new instance of
