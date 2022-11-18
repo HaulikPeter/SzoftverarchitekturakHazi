@@ -13,6 +13,9 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import hu.bme.vik.aut.databinding.ActivityLoginBinding
 
 import hu.bme.vik.aut.R
@@ -22,6 +25,8 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var loginViewModel: LoginViewModel
     private lateinit var binding: ActivityLoginBinding
+
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,13 +39,19 @@ class LoginActivity : AppCompatActivity() {
         val login = binding.login
         val loading = binding.loading
         val adminDasboardTestButton = binding.adminDashboardTestButton
-        adminDasboardTestButton?.setOnClickListener{
+        adminDasboardTestButton.setOnClickListener{
             val intent = Intent(this, AdminDashboardActivity::class.java)
             startActivity(intent)
         }
 
-        loginViewModel = ViewModelProvider(this, LoginViewModelFactory())
-                .get(LoginViewModel::class.java)
+        auth = Firebase.auth
+        if (auth.currentUser != null) {
+            startActivity(Intent(this, AdminDashboardActivity::class.java))
+            setResult(Activity.RESULT_OK)
+            finish()
+        }
+
+        loginViewModel = ViewModelProvider(this, LoginViewModelFactory())[LoginViewModel::class.java]
 
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
@@ -66,10 +77,10 @@ class LoginActivity : AppCompatActivity() {
             if (loginResult.success != null) {
                 updateUiWithUser(loginResult.success)
             }
-            setResult(Activity.RESULT_OK)
+            //setResult(Activity.RESULT_OK)
 
             //Complete and destroy login activity once successful
-            finish()
+            //finish()
         })
 
         username.afterTextChanged {
@@ -114,10 +125,18 @@ class LoginActivity : AppCompatActivity() {
                 "$welcome $displayName",
                 Toast.LENGTH_LONG
         ).show()
+
+        startActivity(Intent(this, AdminDashboardActivity::class.java))
+
+        setResult(Activity.RESULT_OK)
+        finish()
     }
 
     private fun showLoginFailed(@StringRes errorString: Int) {
-        Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
+        if (loginViewModel.loginResult.value?.desc != null)
+            Toast.makeText(applicationContext, loginViewModel.loginResult.value?.desc, Toast.LENGTH_SHORT).show()
+        else
+            Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
     }
 }
 
