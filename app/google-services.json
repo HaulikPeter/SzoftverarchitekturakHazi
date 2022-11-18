@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "605212635414",
+    "firebase_url": "https://quarantinecaloriecalc-default-rtdb.europe-west1.firebasedatabase.app/",
     "project_id": "quarantinecaloriecalc",
     "storage_bucket": "quarantinecaloriecalc.appspot.com"
   },

@@ -1,4 +1,4 @@
-package hu.bme.vik.aut.ui.admindashboard.adapters.residentslist
+package hu.bme.vik.aut.ui.admindashboard.adapters.ResidentsList
 
 import android.view.View
 import android.widget.ImageButton

@@ -15,6 +15,7 @@ import android.widget.EditText
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 import hu.bme.vik.aut.databinding.ActivityLoginBinding
 
@@ -46,9 +47,10 @@ class LoginActivity : AppCompatActivity() {
 
         auth = Firebase.auth
         if (auth.currentUser != null) {
-            startActivity(Intent(this, AdminDashboardActivity::class.java))
-            setResult(Activity.RESULT_OK)
-            finish()
+//            startActivity(Intent(this, AdminDashboardActivity::class.java))
+//            setResult(Activity.RESULT_OK)
+//            finish()
+            updateUiWithUser(null)
         }
 
         loginViewModel = ViewModelProvider(this, LoginViewModelFactory())[LoginViewModel::class.java]
@@ -116,9 +118,9 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateUiWithUser(model: LoggedInUserView) {
+    private fun updateUiWithUser(model: LoggedInUserView?) {
         val welcome = getString(R.string.welcome)
-        val displayName = model.displayName
+        val displayName = model?.displayName.toString()
         // TODO : initiate successful logged in experience
         Toast.makeText(
                 applicationContext,
@@ -126,13 +128,44 @@ class LoginActivity : AppCompatActivity() {
                 Toast.LENGTH_LONG
         ).show()
 
-        startActivity(Intent(this, AdminDashboardActivity::class.java))
+        val db = FirebaseDatabase.getInstance().reference
 
-        setResult(Activity.RESULT_OK)
-        finish()
+
+        db.child("users").child(auth.currentUser?.uid.toString()).get()
+            .addOnSuccessListener {
+                if (it.exists()) {
+                    if (it.child("is_admin").exists()) {
+                        startActivity(Intent(this, AdminDashboardActivity::class.java))
+                        setResult(Activity.RESULT_OK)
+                        finish()
+                    } else {
+                        showLoginFailed("ResidentDashboardActivity NOT IMPLEMENTED")
+                        //startActivity(Intent(this, ResidentDashboardActivity::class.java))
+                        //setResult(Activity.RESULT_OK)
+                        //finish()
+                    }
+
+                } else {
+                    startActivity(Intent(this, LoggedInUserActivity::class.java))
+                    setResult(Activity.RESULT_OK)
+                    finish()
+                }
+            }.addOnFailureListener {
+                showLoginFailed(R.string.login_failed)
+            }
+
+
     }
 
     private fun showLoginFailed(@StringRes errorString: Int) {
+        if (loginViewModel.loginResult.value?.desc != null)
+            Toast.makeText(applicationContext, loginViewModel.loginResult.value?.desc, Toast.LENGTH_SHORT).show()
+        else
+            Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
+    }
+
+    // TODO: remove just for test
+    private fun showLoginFailed(errorString: String) {
         if (loginViewModel.loginResult.value?.desc != null)
             Toast.makeText(applicationContext, loginViewModel.loginResult.value?.desc, Toast.LENGTH_SHORT).show()
         else

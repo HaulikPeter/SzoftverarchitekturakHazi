@@ -11,7 +11,7 @@ import hu.bme.vik.aut.R
 import hu.bme.vik.aut.databinding.FragmentAdminOverviewBinding
 import hu.bme.vik.aut.databinding.FragmentAdminResidentsBinding
 import hu.bme.vik.aut.databinding.FragmentAdminSupplyBinding
-import hu.bme.vik.aut.ui.admindashboard.adapters.residentslist.ResidentsListRecyclerViewAdapter
+import hu.bme.vik.aut.ui.admindashboard.adapters.ResidentsList.ResidentsListRecyclerViewAdapter
 import hu.bme.vik.aut.ui.admindashboard.adapters.supplylist.SupplyListRecyclerViewAdapter
 import hu.bme.vik.aut.ui.admindashboard.data.Resident
 import hu.bme.vik.aut.ui.admindashboard.data.ResidentStatus

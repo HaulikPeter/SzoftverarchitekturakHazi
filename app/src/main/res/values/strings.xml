@@ -35,5 +35,14 @@
     <string name="new_supply_enter_name_error">Supply name cannot be empty</string>
     <string name="new_supply_enter_calories_error">Calories must be between 1 and 10000</string>
     <string name="new_supply_enter_stock_error">Supply stock must be between 1 and 10000</string>
+    <string name="title_activity_logged_in_user">LoggedInUserActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
 </resources>

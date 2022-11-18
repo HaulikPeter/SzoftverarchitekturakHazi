@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -10,6 +10,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.QuarantineCalorieCalc">
+        <activity
+            android:name=".ui.login.LoggedInUserActivity"
+            android:exported="false"
+            android:label="@string/title_activity_logged_in_user"
+            android:theme="@style/Theme.QuarantineCalorieCalc.NoActionBar">
+        </activity>
         <activity
             android:name=".ui.admindashboard.AdminDashboardActivity"
             android:exported="false"
