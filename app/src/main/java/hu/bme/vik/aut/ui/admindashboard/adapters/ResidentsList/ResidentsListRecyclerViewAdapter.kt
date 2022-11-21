@@ -7,9 +7,12 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import hu.bme.vik.aut.R
-import hu.bme.vik.aut.ui.admindashboard.data.Resident
+import hu.bme.vik.aut.data.Resident
 
-class ResidentsListRecyclerViewAdapter(val context: Context): RecyclerView.Adapter<ResidentsListViewHolder>() {
+class  ResidentsListRecyclerViewAdapter(val context: Context, val listener: ResidentsListRecyclerViewListener): RecyclerView.Adapter<ResidentsListViewHolder>() {
+    interface  ResidentsListRecyclerViewListener {
+        fun deleteButtonClickedOnResidentItem(resident: Resident, onResult: (Boolean)->Unit)
+    }
     private val residents = mutableListOf<Resident>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ResidentsListViewHolder {
         val itemView: View = LayoutInflater
@@ -25,7 +28,11 @@ class ResidentsListRecyclerViewAdapter(val context: Context): RecyclerView.Adapt
         holder.status.text = resident.status.toString()
         holder.itemView.setBackgroundColor(ContextCompat.getColor(context, resident.status.getColorId()))
         holder.deleteButton.setOnClickListener{
-            removeResidentAtPosition(residents.indexOf(resident))
+            listener.deleteButtonClickedOnResidentItem(resident){
+                if (it) {
+                    removeResidentAtPosition(residents.indexOf(resident))
+                }
+            }
         }
     }
 
@@ -42,10 +49,12 @@ class ResidentsListRecyclerViewAdapter(val context: Context): RecyclerView.Adapt
         residents.add(resident)
         notifyItemInserted(residents.size - 1)
     }
-
+    fun setResidents(residentsList: List<Resident>) {
+        residents.clear()
+        addResidents(residentsList)
+    }
     private fun removeResidentAtPosition(position: Int) {
         residents.removeAt(position)
         notifyItemRemoved(position)
-
     }
 }
