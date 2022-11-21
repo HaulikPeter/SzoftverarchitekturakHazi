@@ -28,7 +28,11 @@ class  ResidentsListRecyclerViewAdapter(val context: Context, val listener: Resi
         holder.status.text = resident.status.toString()
         holder.itemView.setBackgroundColor(ContextCompat.getColor(context, resident.status.getColorId()))
         holder.deleteButton.setOnClickListener{
-            removeResidentAtPosition(residents.indexOf(resident))
+            listener.deleteButtonClickedOnResidentItem(resident){
+                if (it) {
+                    removeResidentAtPosition(residents.indexOf(resident))
+                }
+            }
         }
     }
 
@@ -50,12 +54,7 @@ class  ResidentsListRecyclerViewAdapter(val context: Context, val listener: Resi
         addResidents(residentsList)
     }
     private fun removeResidentAtPosition(position: Int) {
-        val resident = residents.get(position)
-        listener.deleteButtonClickedOnResidentItem(resident){
-            if (it) {
-                residents.removeAt(position)
-                notifyItemRemoved(position)
-            }
-        }
+        residents.removeAt(position)
+        notifyItemRemoved(position)
     }
 }

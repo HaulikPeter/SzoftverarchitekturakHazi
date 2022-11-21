@@ -6,24 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import hu.bme.vik.aut.data.Resident
 import hu.bme.vik.aut.databinding.FragmentAdminSupplyBinding
 import hu.bme.vik.aut.ui.admindashboard.adapters.supplylist.SupplyListRecyclerViewAdapter
 import hu.bme.vik.aut.data.Supply
+import hu.bme.vik.aut.service.OnResultListener
+import hu.bme.vik.aut.service.ResidentsService
+import hu.bme.vik.aut.service.SuppliesService
 import kotlin.concurrent.thread
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [AdminSupplyFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class AdminSupplyFragment : Fragment(), AddSupplyDialogFragment.AddSupplyDialogFragmentListener {
+class AdminSupplyFragment : Fragment(), AddSupplyDialogFragment.AddSupplyDialogFragmentListener, SupplyListRecyclerViewAdapter.SuppliesListRecyclerViewListener {
     val args: AdminSupplyFragmentArgs by navArgs()
 
     lateinit var binding: FragmentAdminSupplyBinding
@@ -42,41 +37,55 @@ class AdminSupplyFragment : Fragment(), AddSupplyDialogFragment.AddSupplyDialogF
         binding = FragmentAdminSupplyBinding.inflate(inflater, container, false)
         loadingProgressBar = binding.suppliesLoadingProgressBar
         loadingProgressBar.visibility = View.VISIBLE
-        val residentsListRecyclerView = binding.supplyRecyclerView
+        val suppliesRecyclerView = binding.supplyRecyclerView
 
-        suppliesRecyclerViewAdapter = SupplyListRecyclerViewAdapter()
-        residentsListRecyclerView.adapter = suppliesRecyclerViewAdapter
-        residentsListRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        suppliesRecyclerViewAdapter = SupplyListRecyclerViewAdapter(this)
+        suppliesRecyclerView.adapter = suppliesRecyclerViewAdapter
+        suppliesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         loadSupplies()
         return binding.root
         return binding.root;
     }
     private fun loadSupplies() {
-        thread {
-            val supplies: List<Supply> = listOf(
-                Supply(name = "Honey", calorie = 1000, stock = 10),
-                Supply(name = "Apple", calorie = 150, stock = 2),
-                Supply(name = "Banana", calorie = 300, stock = 6),
-                Supply(name = "Pork Chop", calorie = 560, stock = 4),
-                Supply(name = "Chop Suey", calorie = 666, stock = 99)
-
-            )
-            Thread.sleep(1000)
-            if(this.isAdded) {
-                requireActivity().runOnUiThread {
-                    suppliesRecyclerViewAdapter.addSupplies(supplies)
-                    loadingProgressBar.visibility = View.GONE
-                }
+        SuppliesService.getInstance().getSuppliesInHousehold(args.householdId, object :
+            OnResultListener<List<Supply>> {
+            override fun onSuccess(supplies: List<Supply>) {
+                suppliesRecyclerViewAdapter.setSupplies(supplies)
+                loadingProgressBar.visibility = View.GONE
             }
-        }
-    }
 
-    companion object {
-
+            override fun onError(exception: Exception) {
+                Toast.makeText(context, "Error loading residents. Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+                loadingProgressBar.visibility = View.GONE
+            }
+        })
     }
 
     override fun onSupplyAdded(newSupply: Supply) {
-        suppliesRecyclerViewAdapter.addSupply(newSupply)
+        newSupply.householdId = args.householdId
+        SuppliesService.getInstance().addSupply(newSupply, object: OnResultListener<String>{
+            override fun onSuccess(id: String) {
+                newSupply.id = id
+                suppliesRecyclerViewAdapter.addSupply(newSupply)
+            }
+
+            override fun onError(exception: Exception) {
+                Toast.makeText(requireContext(), "Error while creating supply item", Toast.LENGTH_SHORT)
+            }
+        })
+
+    }
+
+    override fun deleteButtonClickedOnSupplyItem(supply: Supply, onResult: (Boolean) -> Unit) {
+
+    }
+
+    override fun onSupplyConsumptionChangeClicked(
+        supply: Supply,
+        changeAmount: Int,
+        onResult: (Boolean) -> Unit
+    ) {
+        TODO("Not yet implemented")
     }
 }

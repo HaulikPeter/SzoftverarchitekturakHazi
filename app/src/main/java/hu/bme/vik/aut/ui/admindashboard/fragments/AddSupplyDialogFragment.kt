@@ -58,8 +58,8 @@ class AddSupplyDialogFragment(private val listener: AddSupplyDialogFragmentListe
 
     private fun getSupplyItem(): Supply = Supply(
         name = binding.supplyNameEditText.text.toString(),
-        calorie = binding.supplyCaloriesPicker.value,
-        stock = binding.supplyStockPicker.value
+        calorie = binding.supplyCaloriesPicker.value.toLong(),
+        stock = binding.supplyStockPicker.value.toLong()
     )
 
     private fun isValid(): Boolean
