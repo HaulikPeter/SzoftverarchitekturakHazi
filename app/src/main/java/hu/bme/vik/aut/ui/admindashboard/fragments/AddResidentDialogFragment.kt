@@ -57,6 +57,7 @@ class AddResidentDialogFragment(private val listener: AddResidentDialogFragmentL
     }
 
     private fun getResidentItem(): Resident = Resident(
+        id = "",
         name = binding.residentNameEditText.text.toString(),
         status = binding.residentStatusSpinnerSelector.selectedItem as ResidentStatus
     )

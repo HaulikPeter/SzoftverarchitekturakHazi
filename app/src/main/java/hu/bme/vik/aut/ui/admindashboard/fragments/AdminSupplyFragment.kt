@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import hu.bme.vik.aut.R
 import hu.bme.vik.aut.databinding.FragmentAdminOverviewBinding
@@ -29,7 +30,7 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class AdminSupplyFragment : Fragment(), AddSupplyDialogFragment.AddSupplyDialogFragmentListener {
-
+    val args: AdminSupplyFragmentArgs by navArgs()
 
     lateinit var binding: FragmentAdminSupplyBinding
     lateinit var suppliesRecyclerViewAdapter: SupplyListRecyclerViewAdapter

@@ -45,6 +45,7 @@ class LoginActivity : AppCompatActivity() {
         val adminDasboardTestButton = binding.adminDashboardTestButton
         adminDasboardTestButton.setOnClickListener{
             val intent = Intent(this, AdminDashboardActivity::class.java)
+            intent.putExtra(AdminDashboardActivity.HOUSEHOLD_ID_ARGUMENT_NAME, "0")
             startActivity(intent)
         }
 
@@ -138,7 +139,9 @@ class LoginActivity : AppCompatActivity() {
             .addOnSuccessListener {
                 if (it.exists()) {
                     if (it.child("is_admin").exists()) {
-                        startActivity(Intent(this, AdminDashboardActivity::class.java))
+                        intent = Intent(this, AdminDashboardActivity::class.java)
+                        intent.putExtra(AdminDashboardActivity.HOUSEHOLD_ID_ARGUMENT_NAME, "0")
+                        startActivity(intent)
                         setResult(Activity.RESULT_OK)
                         finish()
                     } else {

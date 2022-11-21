@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.navigation.NavController
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import hu.bme.vik.aut.R
@@ -13,17 +14,23 @@ import hu.bme.vik.aut.ui.admindashboard.data.Resident
 import hu.bme.vik.aut.ui.admindashboard.fragments.*
 
 class AdminDashboardActivity : AppCompatActivity() {
+
+    companion object {
+       val HOUSEHOLD_ID_ARGUMENT_NAME = "HOUSEHOLD_ID"
+    }
+
     // code created with help from: https://www.geeksforgeeks.org/bottom-navigation-bar-in-android/
     lateinit var binding:  ActivityAdminDashboardBinding
     lateinit var navController: NavController
     lateinit var floatingActionButton: FloatingActionButton
     lateinit var navHostFragment: NavHostFragment
+    lateinit var householdId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAdminDashboardBinding.inflate(layoutInflater)
         val bottomNavigationBar = binding.bottomNavBar
-
+        householdId = intent.getStringExtra(HOUSEHOLD_ID_ARGUMENT_NAME)!!
 
         navHostFragment = supportFragmentManager.findFragmentById(R.id.navigation_host_fragment) as NavHostFragment
 
@@ -41,26 +48,42 @@ class AdminDashboardActivity : AppCompatActivity() {
 
         setContentView(binding.root)
     }
-
-    private fun navigateToFragment(currentFragmentId: Int, nextFragmentId: Int) {
-        val currentFragmentName = resources.getResourceEntryName(currentFragmentId)
-        val nextFragmentName = resources.getResourceEntryName(nextFragmentId)
-
-        val navigationName = "action_${currentFragmentName}_to_${nextFragmentName}"
-        val navigationId = resources.getIdentifier(navigationName,"id",packageName)
-
-        navController.navigate(navigationId)
-
-
-        if (getIsFabVisibileOnFragment(nextFragmentId)) {
-            floatingActionButton.setImageResource(getImageIdForFabOnFragment(nextFragmentId))
-            floatingActionButton.setOnClickListener(getOnClickListenerForFabOnFragment(nextFragmentId))
-            floatingActionButton.show()
-        } else {
-            floatingActionButton.hide()
+    private fun getFromAdminOvervievFragmentNavigationAction(nextFragmentId: Int): NavDirections? {
+        return when(nextFragmentId) {
+            R.id.adminResidentsFragment -> AdminOverviewFragmentDirections.actionAdminOverviewFragmentToAdminResidentsFragment(householdId)
+            R.id.adminSupplyFragment -> AdminOverviewFragmentDirections.actionAdminOverviewFragmentToAdminSupplyFragment(householdId)
+            else -> null
         }
-
     }
+
+    private fun getFromAdminResidentsFragmentNavigationAction(nextFragmentId: Int): NavDirections? {
+        return when(nextFragmentId) {
+            R.id.adminOverviewFragment -> AdminResidentsFragmentDirections.actionAdminResidentsFragmentToAdminOverviewFragment(householdId)
+            R.id.adminSupplyFragment -> AdminResidentsFragmentDirections.actionAdminResidentsFragmentToAdminSupplyFragment(householdId)
+            else -> null
+        }
+    }
+
+    private fun getFromAdminSupplyFragmentNavigationAction(nextFragmentId: Int): NavDirections? {
+        return when(nextFragmentId) {
+            R.id.adminOverviewFragment -> AdminSupplyFragmentDirections.actionAdminSupplyFragmentToAdminOverviewFragment(householdId)
+            R.id.adminResidentsFragment -> AdminSupplyFragmentDirections.actionAdminSupplyFragmentToAdminResidentsFragment(householdId)
+            else -> null
+        }
+    }
+    private fun navigateToFragment(currentFragmentId: Int, nextFragmentId: Int) {
+        val action = when (currentFragmentId) {
+            R.id.adminOverviewFragment -> getFromAdminOvervievFragmentNavigationAction(nextFragmentId)
+            R.id.adminResidentsFragment -> getFromAdminResidentsFragmentNavigationAction(nextFragmentId)
+            R.id.adminSupplyFragment -> getFromAdminSupplyFragmentNavigationAction(nextFragmentId)
+            else -> null
+        }
+        if(action == null) {
+            return
+        }
+        navController.navigate(action)
+    }
+
     private fun getIsFabVisibileOnFragment(fragmentId: Int) : Boolean {
         return when (fragmentId) {
             R.id.adminOverviewFragment -> false

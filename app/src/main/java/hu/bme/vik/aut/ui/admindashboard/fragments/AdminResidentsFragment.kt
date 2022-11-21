@@ -1,17 +1,21 @@
 package hu.bme.vik.aut.ui.admindashboard.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.ktx.Firebase
 import hu.bme.vik.aut.databinding.FragmentAdminResidentsBinding
+import hu.bme.vik.aut.service.OnResultListener
+import hu.bme.vik.aut.service.ResidentsService
 import hu.bme.vik.aut.ui.admindashboard.adapters.ResidentsList.ResidentsListRecyclerViewAdapter
 import hu.bme.vik.aut.ui.admindashboard.data.Resident
 import hu.bme.vik.aut.ui.admindashboard.data.ResidentStatus
@@ -27,10 +31,8 @@ private const val ARG_PARAM2 = "param2"
  * Use the [AdminResidentsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class AdminResidentsFragment : Fragment(), AddResidentDialogFragment.AddResidentDialogFragmentListener {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+class AdminResidentsFragment : Fragment(), AddResidentDialogFragment.AddResidentDialogFragmentListener, ResidentsListRecyclerViewAdapter.ResidentsListRecyclerViewListener{
+    val args: AdminResidentsFragmentArgs by navArgs()
 
     lateinit var binding: FragmentAdminResidentsBinding
     lateinit var residentsRecyclerViewAdapter: ResidentsListRecyclerViewAdapter
@@ -38,10 +40,7 @@ class AdminResidentsFragment : Fragment(), AddResidentDialogFragment.AddResident
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
     }
 
     override fun onCreateView(
@@ -54,7 +53,7 @@ class AdminResidentsFragment : Fragment(), AddResidentDialogFragment.AddResident
         loadingProgressBar.visibility = View.VISIBLE
         val residentsListRecyclerView = binding.residentsRecyclerView
 
-        residentsRecyclerViewAdapter = ResidentsListRecyclerViewAdapter(requireContext())
+        residentsRecyclerViewAdapter = ResidentsListRecyclerViewAdapter(requireContext(), this)
         residentsListRecyclerView.adapter = residentsRecyclerViewAdapter
         residentsListRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
@@ -63,44 +62,21 @@ class AdminResidentsFragment : Fragment(), AddResidentDialogFragment.AddResident
     }
 
     private fun loadResidents() {
-        val user = Firebase.auth.currentUser!!
-        val db = FirebaseDatabase.getInstance().reference
-        db.child("users").child(user.uid).child("household_id").get()
-            .addOnSuccessListener {
-                fillUsersByHousehold(db, it.value.toString())
+
+
+        ResidentsService.getInstance().getResidentsInHousehold(args.householdId, object : OnResultListener <List<Resident>> {
+            override fun onSuccess(result: List<Resident>) {
+                residentsRecyclerViewAdapter.setResidents(result)
+                loadingProgressBar.visibility = View.GONE
             }
-    }
 
-    private fun fillUsersByHousehold(db: DatabaseReference, householdId: String) {
-        db.child("user").orderByChild("household_id").equalTo(householdId)
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(user: DataSnapshot) {
-                    residentsRecyclerViewAdapter.addResident(
-                        Resident(
-                            user.child("display_name").value.toString(),
-                            ResidentStatus.valueOf(user.child("status").value.toString()))
-                    )
-                }
-                override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(context, "Error loading residents", Toast.LENGTH_SHORT).show()
-                }
-            })
+            override fun onError(exception: Exception) {
+                Toast.makeText(context, "Error loading residents. Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
 
-//        thread {
-//            val residents: List<Resident> = listOf(Resident(name = "Bruce Willis", status = ResidentStatus.HEALTHY),
-//                Resident(name = "Helen Mirren", status = ResidentStatus.SICK),
-//                Resident(name = "John Malkovich", status = ResidentStatus.SICK),
-//                Resident(name = "Morgan Freeman", status = ResidentStatus.HEALTHY))
-//            Thread.sleep(1000)
-//            if(this.isAdded) {
-//                requireActivity().runOnUiThread {
-//                    residentsRecyclerViewAdapter.addResidents(residents)
-//                    loadingProgressBar.visibility = View.GONE
-//                }
-//            }
-//        }
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -114,15 +90,23 @@ class AdminResidentsFragment : Fragment(), AddResidentDialogFragment.AddResident
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             AdminResidentsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-
-                }
             }
     }
 
     override fun onResidentAdded(newResident: Resident) {
         residentsRecyclerViewAdapter.addResident(newResident)
+    }
+
+    override fun deleteButtonClickedOnResidentItem(resident: Resident, onResult: (Boolean)->Unit) {
+        ResidentsService.getInstance().removeResidentFromHousehold(resident.id, object: OnResultListener<Boolean>{
+            override fun onSuccess(result: Boolean) {
+                onResult(result)
+            }
+
+            override fun onError(exception: Exception) {
+                Toast.makeText(context, "Error loading deleting Resident. Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+                onResult(false)
+            }
+        })
     }
 }

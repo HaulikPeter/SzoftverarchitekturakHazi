@@ -26,6 +26,7 @@
             app:launchSingleTop="true"
             app:popUpTo="@id/adminOverviewFragment"
             app:popUpToInclusive="true" />
+        <argument android:name="householdId" app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/adminResidentsFragment"
@@ -48,6 +49,7 @@
             app:launchSingleTop="true"
             app:popUpTo="@id/adminResidentsFragment"
             app:popUpToInclusive="true" />
+        <argument android:name="householdId" app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/adminSupplyFragment"
@@ -70,5 +72,6 @@
             app:launchSingleTop="true"
             app:popUpTo="@id/adminSupplyFragment"
             app:popUpToInclusive="true" />
+        <argument android:name="householdId" app:argType="string" />
     </fragment>
 </navigation>
