@@ -8,15 +8,9 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import hu.bme.vik.aut.R
-import hu.bme.vik.aut.databinding.FragmentAdminOverviewBinding
-import hu.bme.vik.aut.databinding.FragmentAdminResidentsBinding
 import hu.bme.vik.aut.databinding.FragmentAdminSupplyBinding
-import hu.bme.vik.aut.ui.admindashboard.adapters.ResidentsList.ResidentsListRecyclerViewAdapter
 import hu.bme.vik.aut.ui.admindashboard.adapters.supplylist.SupplyListRecyclerViewAdapter
-import hu.bme.vik.aut.ui.admindashboard.data.Resident
-import hu.bme.vik.aut.ui.admindashboard.data.ResidentStatus
-import hu.bme.vik.aut.ui.admindashboard.data.Supply
+import hu.bme.vik.aut.data.Supply
 import kotlin.concurrent.thread
 
 // TODO: Rename parameter arguments, choose names that match

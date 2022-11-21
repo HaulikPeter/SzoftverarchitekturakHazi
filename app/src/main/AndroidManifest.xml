@@ -14,8 +14,7 @@
             android:name=".ui.login.LoggedInUserActivity"
             android:exported="false"
             android:label="@string/title_activity_logged_in_user"
-            android:theme="@style/Theme.QuarantineCalorieCalc.NoActionBar">
-        </activity>
+            android:theme="@style/Theme.QuarantineCalorieCalc.NoActionBar"></activity>
         <activity
             android:name=".ui.admindashboard.AdminDashboardActivity"
             android:exported="false"
@@ -34,6 +33,15 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.householdselector.HouseHoldSelectorActivity"
+            android:exported="false"
+            android:label="@string/title_activity_household_selctor"
+            android:theme="@style/Theme.QuarantineCalorieCalc">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
         </activity>
     </application>
 

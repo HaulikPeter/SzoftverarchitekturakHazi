@@ -7,12 +7,11 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import hu.bme.vik.aut.R
-import hu.bme.vik.aut.service.ResidentsService
-import hu.bme.vik.aut.ui.admindashboard.data.Resident
+import hu.bme.vik.aut.data.Resident
 
-class ResidentsListRecyclerViewAdapter(val context: Context, val listener: ResidentsListRecyclerViewListener): RecyclerView.Adapter<ResidentsListViewHolder>() {
+class  ResidentsListRecyclerViewAdapter(val context: Context, val listener: ResidentsListRecyclerViewListener): RecyclerView.Adapter<ResidentsListViewHolder>() {
     interface  ResidentsListRecyclerViewListener {
-        fun deleteButtonClickedOnResidentItem(resident: Resident,onResult: (Boolean)->Unit)
+        fun deleteButtonClickedOnResidentItem(resident: Resident, onResult: (Boolean)->Unit)
     }
     private val residents = mutableListOf<Resident>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ResidentsListViewHolder {

@@ -1,4 +1,4 @@
-package hu.bme.vik.aut.ui.admindashboard.data
+package hu.bme.vik.aut.data
 
 data class Supply(
     val name: String,

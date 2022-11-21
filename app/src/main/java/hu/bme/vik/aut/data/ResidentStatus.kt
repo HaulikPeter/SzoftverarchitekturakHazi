@@ -1,4 +1,4 @@
-package hu.bme.vik.aut.ui.admindashboard.data
+package hu.bme.vik.aut.data
 
 import hu.bme.vik.aut.R
 

@@ -20,9 +20,9 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="add_button_text">Add</string>
-    <string name="add_resident_dialog_title">Add resident to household</string>
-    <string name="resident_name_hint">Resident\'s name</string>
-    <string name="new_resident_enter_name_error">Resident name cannot be empty</string>
+    <string name="add_household_dialog_title">Add household</string>
+    <string name="household_name_hint">Household\'s name</string>
+    <string name="new_household_enter_name_error">Household name cannot be empty</string>
     <string name="status_text">Status:</string>
     <string name="supply_calories_title">Calories: </string>
     <string name="resident_status_title">Status: </string>
@@ -44,5 +44,6 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_household_selctor">Household Selector</string>
 
 </resources>

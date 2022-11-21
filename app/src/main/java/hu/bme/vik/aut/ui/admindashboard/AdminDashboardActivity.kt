@@ -2,7 +2,6 @@ package hu.bme.vik.aut.ui.admindashboard
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
@@ -10,7 +9,6 @@ import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import hu.bme.vik.aut.R
 import hu.bme.vik.aut.databinding.ActivityAdminDashboardBinding
-import hu.bme.vik.aut.ui.admindashboard.data.Resident
 import hu.bme.vik.aut.ui.admindashboard.fragments.*
 
 class AdminDashboardActivity : AppCompatActivity() {
@@ -81,6 +79,14 @@ class AdminDashboardActivity : AppCompatActivity() {
         if(action == null) {
             return
         }
+        floatingActionButton.setOnClickListener(getOnClickListenerForFabOnFragment(nextFragmentId))
+
+        if (getIsFabVisibileOnFragment(nextFragmentId)) {
+            floatingActionButton.setImageResource(getImageIdForFabOnFragment(nextFragmentId))
+            floatingActionButton.show()
+        } else {
+            floatingActionButton.visibility = View.GONE
+        }
         navController.navigate(action)
     }
 
@@ -95,7 +101,6 @@ class AdminDashboardActivity : AppCompatActivity() {
 
     private fun getOnClickListenerForFabOnFragment(fragmentId: Int) : (View) -> Unit {
         return when (fragmentId) {
-            R.id.adminResidentsFragment -> { _: View -> AddResidentDialogFragment(navHostFragment.childFragmentManager.fragments.first() as AdminResidentsFragment).show(this.supportFragmentManager, AddResidentDialogFragment.TAG) }
             R.id.adminSupplyFragment -> { _: View ->  AddSupplyDialogFragment(navHostFragment.childFragmentManager.fragments.first() as AdminSupplyFragment).show(this.supportFragmentManager, AddSupplyDialogFragment.TAG)}
             else -> { _: View -> {} }
         }

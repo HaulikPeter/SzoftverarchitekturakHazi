@@ -1,17 +1,13 @@
 package hu.bme.vik.aut.service
 
-import android.util.Log
-import android.widget.Toast
 import com.google.firebase.database.*
-import hu.bme.vik.aut.ui.admindashboard.data.Resident
-import hu.bme.vik.aut.ui.admindashboard.data.ResidentStatus
-import kotlin.coroutines.suspendCoroutine
+import hu.bme.vik.aut.data.Resident
+import hu.bme.vik.aut.data.ResidentStatus
 
 class ResidentsService private constructor(val db: DatabaseReference) {
 
 
     fun removeResidentFromHousehold(residentId: String, onResultListener: OnResultListener<Boolean>) {
-        db.get()
         db.child("users").child(residentId).removeValue().addOnSuccessListener {
             onResultListener.onSuccess(true)
         }.addOnFailureListener {
@@ -24,6 +20,7 @@ class ResidentsService private constructor(val db: DatabaseReference) {
                 override fun onDataChange(users: DataSnapshot) {
                     val residents = mutableListOf<Resident>()
                     if (users.value == null) {
+                        onResultListener.onSuccess(residents)
                         return
                     }
                     val usersHashMap: HashMap<String, HashMap<String, Any>> = users.value as HashMap<String, HashMap<String, Any>>

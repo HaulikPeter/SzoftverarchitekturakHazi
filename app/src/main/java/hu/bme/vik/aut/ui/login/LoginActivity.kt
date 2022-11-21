@@ -24,6 +24,7 @@ import hu.bme.vik.aut.databinding.ActivityLoginBinding
 
 import hu.bme.vik.aut.R
 import hu.bme.vik.aut.ui.admindashboard.AdminDashboardActivity
+import hu.bme.vik.aut.ui.householdselector.HouseHoldSelectorActivity
 
 class LoginActivity : AppCompatActivity() {
 
@@ -139,8 +140,7 @@ class LoginActivity : AppCompatActivity() {
             .addOnSuccessListener {
                 if (it.exists()) {
                     if (it.child("is_admin").exists()) {
-                        intent = Intent(this, AdminDashboardActivity::class.java)
-                        intent.putExtra(AdminDashboardActivity.HOUSEHOLD_ID_ARGUMENT_NAME, "0")
+                        intent = Intent(this, HouseHoldSelectorActivity::class.java)
                         startActivity(intent)
                         setResult(Activity.RESULT_OK)
                         finish()

@@ -3,16 +3,12 @@ package hu.bme.vik.aut.ui.admindashboard.fragments
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
-import com.google.android.material.snackbar.Snackbar
 import hu.bme.vik.aut.R
-import hu.bme.vik.aut.databinding.FragmentAddResidentDialogBinding
 import hu.bme.vik.aut.databinding.FragmentAddSupplyDialogBinding
-import hu.bme.vik.aut.ui.admindashboard.data.Supply
+import hu.bme.vik.aut.data.Supply
 
 class AddSupplyDialogFragment(private val listener: AddSupplyDialogFragmentListener) : DialogFragment(){
 
@@ -26,7 +22,7 @@ class AddSupplyDialogFragment(private val listener: AddSupplyDialogFragmentListe
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         dialogView = getContentView()
         return AlertDialog.Builder(requireContext())
-            .setTitle(getString(R.string.add_resident_dialog_title))
+            .setTitle(getString(R.string.add_household_dialog_title))
             .setView(dialogView)
             .setPositiveButton(getString(R.string.add_button_text)){
                     _,_ -> {}

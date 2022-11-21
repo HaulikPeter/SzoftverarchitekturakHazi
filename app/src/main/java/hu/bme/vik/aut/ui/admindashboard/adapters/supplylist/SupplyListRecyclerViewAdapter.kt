@@ -1,14 +1,11 @@
 package hu.bme.vik.aut.ui.admindashboard.adapters.supplylist
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import hu.bme.vik.aut.R
-import hu.bme.vik.aut.ui.admindashboard.data.Resident
-import hu.bme.vik.aut.ui.admindashboard.data.Supply
+import hu.bme.vik.aut.data.Supply
 
 class SupplyListRecyclerViewAdapter(): RecyclerView.Adapter<SupplyListViewHolder>() {
     private val supplies = mutableListOf<Supply>()
