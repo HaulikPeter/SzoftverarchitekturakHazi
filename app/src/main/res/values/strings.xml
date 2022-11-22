@@ -24,13 +24,13 @@
     <string name="household_name_hint">Household\'s name</string>
     <string name="new_household_enter_name_error">Household name cannot be empty</string>
     <string name="status_text">Status:</string>
-    <string name="supply_calories_title">Calories: </string>
-    <string name="resident_status_title">Status: </string>
-    <string name="supply_stock_title">Stock: </string>
+    <string name="supply_calories_title">Calories:</string>
+    <string name="resident_status_title">Status:</string>
+    <string name="supply_stock_title">Stock:</string>
     <string name="supply_s_name_hint">Supply\'s Name</string>
-    <string name="calories_title">"Calories: "</string>
+    <string name="calories_title">Calories:</string>
     <string name="kcal_title">kcal</string>
-    <string name="stock_title">"Stock: "</string>
+    <string name="stock_title">Stock:</string>
     <string name="unit_title">unit(s)</string>
     <string name="new_supply_enter_name_error">Supply name cannot be empty</string>
     <string name="new_supply_enter_calories_error">Calories must be between 1 and 10000</string>
@@ -45,5 +45,14 @@
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="title_activity_household_selctor">Household Selector</string>
-
+    <string name="restock_button_text">Restock</string>
+    <string name="supply_stock_days_text"> days</string>
+    <string name="supply_will_be_out_of_stock_in_days_text"> will be out of stock in </string>
+    <string name="restock_supply_dialog_title">Restock supply</string>
+    <string name="add_stock_amount">Add</string>
+    <string name="admin_dashboard_loading_fragment_label">Loading</string>
+    <string name="current_stock">Current Stock:</string>
+    <string name="current_consumption">Current Consumption:</string>
+    <string name="units">unit(s)</string>
+    <string name="add_supply_dialog_title">Add Supply</string>
 </resources>

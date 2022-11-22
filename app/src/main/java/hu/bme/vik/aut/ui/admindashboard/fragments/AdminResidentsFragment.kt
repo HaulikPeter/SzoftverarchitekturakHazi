@@ -14,7 +14,7 @@ import hu.bme.vik.aut.service.OnResultListener
 import hu.bme.vik.aut.service.ResidentsService
 import hu.bme.vik.aut.ui.admindashboard.adapters.ResidentsList.ResidentsListRecyclerViewAdapter
 import hu.bme.vik.aut.data.Resident
-
+import kotlin.concurrent.thread
 
 
 class AdminResidentsFragment : Fragment(), ResidentsListRecyclerViewAdapter.ResidentsListRecyclerViewListener{
@@ -48,19 +48,34 @@ class AdminResidentsFragment : Fragment(), ResidentsListRecyclerViewAdapter.Resi
     }
 
     private fun loadResidents() {
+        residentsRecyclerViewAdapter.clearResidents()
+        loadingProgressBar.visibility = View.VISIBLE
+
+        thread {
 
 
-        ResidentsService.getInstance().getResidentsInHousehold(args.householdId, object : OnResultListener <List<Resident>> {
-            override fun onSuccess(result: List<Resident>) {
-                residentsRecyclerViewAdapter.setResidents(result)
-                loadingProgressBar.visibility = View.GONE
-            }
+            ResidentsService.getInstance().getResidentsInHousehold(
+                args.householdId,
+                object : OnResultListener<List<Resident>> {
+                    override fun onSuccess(result: List<Resident>) {
+                        requireActivity().runOnUiThread{
+                            residentsRecyclerViewAdapter.setResidents(result)
+                            loadingProgressBar.visibility = View.GONE
+                        }
+                    }
 
-            override fun onError(exception: Exception) {
-                Toast.makeText(context, "Error loading residents. Error: ${exception.message}", Toast.LENGTH_SHORT).show()
-                loadingProgressBar.visibility = View.GONE
-            }
-        })
+                    override fun onError(exception: Exception) {
+                        requireActivity().runOnUiThread {
+                            Toast.makeText(
+                                context,
+                                "Error loading residents. Error: ${exception.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            loadingProgressBar.visibility = View.GONE
+                        }
+                    }
+                })
+        }
     }
 
     override fun deleteButtonClickedOnResidentItem(resident: Resident, onResult: (Boolean)->Unit) {

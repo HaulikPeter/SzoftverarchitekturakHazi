@@ -5,5 +5,6 @@ data class Supply(
     var householdId: String? = null,
     val name: String,
     val calorie: Long,
-    val stock: Long
+    var stock: Long,
+    var consumption: Long? = null
 )

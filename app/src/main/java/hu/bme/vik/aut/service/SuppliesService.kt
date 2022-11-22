@@ -1,5 +1,6 @@
 package hu.bme.vik.aut.service
 
+import android.util.Log
 import com.google.firebase.database.*
 import hu.bme.vik.aut.data.Resident
 import hu.bme.vik.aut.data.ResidentStatus
@@ -7,6 +8,80 @@ import hu.bme.vik.aut.data.Supply
 import java.util.UUID
 
 class SuppliesService  private constructor(val db: DatabaseReference) {
+
+    fun changeSupplyStockByAmount(supply: Supply, amount: Long, onResultListener: OnResultListener<Supply>) {
+        db.child("supplies").child(supply.householdId!!).child(supply.id!!).child("stock").setValue(ServerValue.increment(amount)).addOnSuccessListener {
+            supply.stock += amount
+            onResultListener.onSuccess(supply)
+        }.addOnFailureListener {
+            onResultListener.onError(it)
+        }
+
+    }
+    fun deleteSupply(supply: Supply, onResultListener: OnResultListener<Boolean>) {
+        db.child("users").orderByChild("household_id").equalTo(supply.householdId)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(users: DataSnapshot) {
+                    val valuesToDelete: HashMap<String, Any?> = HashMap()
+                    if (users.value != null) {
+                        val usersHashMap: HashMap<String, HashMap<String, Any>> = users.value as HashMap<String,HashMap<String, Any>>
+                        for ((userId, userData) in usersHashMap) {
+                            try {
+                                val consumption: HashMap<String, Any> = userData.getOrDefault("consumption", null)  as HashMap<String, Any>
+                                for((consumption_id, _) in consumption) {
+                                    if (userId.isNotEmpty() && consumption_id == supply.id) {
+                                        valuesToDelete.put("users/${userId}/consumption/${supply.id}", null)
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                continue
+                            }
+                        }
+                    }
+                    valuesToDelete.put("supplies/${supply.householdId}/${supply.id}", null)
+                    db.updateChildren(valuesToDelete).addOnSuccessListener {
+                        onResultListener.onSuccess(true)
+                    }.addOnFailureListener {
+                        onResultListener.onError(it)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    onResultListener.onError(Exception(error.message))
+                }
+            })
+    }
+
+    fun addConsumptionForSupply(supply: Supply, onResultListener: OnResultListener<Supply>) {
+        db.child("users").orderByChild("household_id").equalTo(supply.householdId).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(users: DataSnapshot) {
+                var consumptionCounter: Long = 0
+                if (users.value != null) {
+                    val usersHashMap: HashMap<String, HashMap<String, Any>> = users.value as HashMap<String,HashMap<String, Any>>
+                    for ((userId, userData) in usersHashMap) {
+                        try {
+                            val consumption: HashMap<String, Any> = userData.getOrDefault("consumption", null)  as HashMap<String, Any>
+                            for((consumption_id, consuptionCountOfUser) in consumption) {
+                                if (userId != null && consumption_id == supply.id) {
+                                    consumptionCounter +=  consuptionCountOfUser as Long
+                                }
+                            }
+                        } catch (e: Exception) {
+                            continue
+                        }
+                    }
+                }
+                supply.consumption = consumptionCounter
+                onResultListener.onSuccess(supply)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                onResultListener.onError(Exception(error.message))
+            }
+        })
+
+
+    }
 
     fun addSupply(supply: Supply,  onResultListener: OnResultListener<String>) {
         val id = UUID.randomUUID().toString()
@@ -26,6 +101,7 @@ class SuppliesService  private constructor(val db: DatabaseReference) {
             }
 
     }
+
     fun getSuppliesInHousehold(householdId: String, onResultListener: OnResultListener<List<Supply>>) {
         db.child("supplies").orderByKey().equalTo(householdId).addListenerForSingleValueEvent(object :
             ValueEventListener {
@@ -46,11 +122,14 @@ class SuppliesService  private constructor(val db: DatabaseReference) {
                                     calorie = supplyData.getOrDefault("calorie", 0) as Long,
                                     stock = supplyData.getOrDefault("stock", 0) as Long
                                 )
+
                                 supplies.add(supply)
+
                             }
                         }
                         onResultListener.onSuccess(supplies)
-                    }catch (e: Exception) {
+
+                    } catch (e: Exception) {
                         onResultListener.onSuccess(mutableListOf<Supply>())
                         return
                     }
@@ -61,6 +140,7 @@ class SuppliesService  private constructor(val db: DatabaseReference) {
                 }
             })
     }
+
     companion object{
         private var INSTANCE : SuppliesService? = null
 

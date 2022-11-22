@@ -45,21 +45,33 @@ class AdminSupplyFragment : Fragment(), AddSupplyDialogFragment.AddSupplyDialogF
 
         loadSupplies()
         return binding.root
-        return binding.root;
     }
     private fun loadSupplies() {
-        SuppliesService.getInstance().getSuppliesInHousehold(args.householdId, object :
-            OnResultListener<List<Supply>> {
-            override fun onSuccess(supplies: List<Supply>) {
-                suppliesRecyclerViewAdapter.setSupplies(supplies)
-                loadingProgressBar.visibility = View.GONE
-            }
+        suppliesRecyclerViewAdapter.clearSupplies()
+        loadingProgressBar.visibility = View.VISIBLE
 
-            override fun onError(exception: Exception) {
-                Toast.makeText(context, "Error loading residents. Error: ${exception.message}", Toast.LENGTH_SHORT).show()
-                loadingProgressBar.visibility = View.GONE
-            }
-        })
+        thread {
+            SuppliesService.getInstance().getSuppliesInHousehold(args.householdId, object :
+                OnResultListener<List<Supply>> {
+                override fun onSuccess(supplies: List<Supply>) {
+                    requireActivity().runOnUiThread {
+                        suppliesRecyclerViewAdapter.setSupplies(supplies)
+                        loadingProgressBar.visibility = View.GONE
+                    }
+                }
+
+                override fun onError(exception: Exception) {
+                    requireActivity().runOnUiThread {
+                        Toast.makeText(
+                            context,
+                            "Error loading supplies. Error: ${exception.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        loadingProgressBar.visibility = View.GONE
+                    }
+                }
+            })
+        }
     }
 
     override fun onSupplyAdded(newSupply: Supply) {
@@ -78,7 +90,16 @@ class AdminSupplyFragment : Fragment(), AddSupplyDialogFragment.AddSupplyDialogF
     }
 
     override fun deleteButtonClickedOnSupplyItem(supply: Supply, onResult: (Boolean) -> Unit) {
+        SuppliesService.getInstance().deleteSupply(supply, object: OnResultListener<Boolean>{
+            override fun onSuccess(result: Boolean) {
+                onResult(result)
+            }
 
+            override fun onError(exception: Exception) {
+                Toast.makeText(requireContext(), "Error deleting Supply. Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+                onResult(false)
+            }
+        })
     }
 
     override fun onSupplyConsumptionChangeClicked(

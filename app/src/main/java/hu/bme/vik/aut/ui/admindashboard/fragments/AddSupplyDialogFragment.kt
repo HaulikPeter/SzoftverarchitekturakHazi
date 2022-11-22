@@ -22,7 +22,7 @@ class AddSupplyDialogFragment(private val listener: AddSupplyDialogFragmentListe
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         dialogView = getContentView()
         return AlertDialog.Builder(requireContext())
-            .setTitle(getString(R.string.add_household_dialog_title))
+            .setTitle(getString(R.string.add_supply_dialog_title))
             .setView(dialogView)
             .setPositiveButton(getString(R.string.add_button_text)){
                     _,_ -> {}

@@ -31,7 +31,8 @@
             android:layout_height="wrap_content"
             android:text="Honey"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:padding="5dp"/>
 
         <TextView
             android:id="@+id/supply_calories_title"
@@ -40,6 +41,7 @@
             android:text="@string/supply_calories_title"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/supply_name"
+            android:padding="5dp"
             />
 
         <TextView
@@ -49,6 +51,7 @@
             android:text="5 kcal"
             app:layout_constraintStart_toEndOf="@+id/supply_calories_title"
             app:layout_constraintTop_toBottomOf="@id/supply_name"
+            android:padding="5dp"
 
             />
         <TextView
@@ -77,8 +80,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_baseline_delete_24"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

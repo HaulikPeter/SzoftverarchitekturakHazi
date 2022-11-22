@@ -53,6 +53,10 @@ class  ResidentsListRecyclerViewAdapter(val context: Context, val listener: Resi
         residents.clear()
         addResidents(residentsList)
     }
+    fun clearResidents() {
+        residents.clear()
+        notifyDataSetChanged()
+    }
     private fun removeResidentAtPosition(position: Int) {
         residents.removeAt(position)
         notifyItemRemoved(position)

@@ -56,6 +56,11 @@ class SupplyListRecyclerViewAdapter(val listener: SuppliesListRecyclerViewListen
         addSupplies(suppliesList)
     }
 
+    fun clearSupplies() {
+        supplies.clear()
+        notifyDataSetChanged()
+    }
+
     private fun removeSupplyAtPosition(position: Int) {
         supplies.removeAt(position)
         notifyItemRemoved(position)
