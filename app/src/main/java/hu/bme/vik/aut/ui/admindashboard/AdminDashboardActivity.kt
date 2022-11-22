@@ -95,7 +95,7 @@ class AdminDashboardActivity : AppCompatActivity() {
     private fun getIsFabVisibileOnFragment(fragmentId: Int) : Boolean {
         return when (fragmentId) {
             R.id.adminOverviewFragment -> false
-            R.id.adminResidentsFragment -> true
+            R.id.adminResidentsFragment -> false
             R.id.adminSupplyFragment -> true
             else -> false
         }
