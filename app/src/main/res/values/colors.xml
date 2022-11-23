@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="healthy_green">#9923EC00</color>
     <color name="sick_red">#99FF4066</color>
+    <color name="gray">#7C7C7C</color>
 </resources>

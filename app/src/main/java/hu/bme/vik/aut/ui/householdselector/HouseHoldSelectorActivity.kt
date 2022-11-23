@@ -1,27 +1,28 @@
 package hu.bme.vik.aut.ui.householdselector
 
+import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import hu.bme.vik.aut.R
 import hu.bme.vik.aut.data.Household
 import hu.bme.vik.aut.databinding.ActivityHouseHoldSelectorBinding
-import hu.bme.vik.aut.databinding.FragmentAdminResidentsBinding
 import hu.bme.vik.aut.service.HouseholdsService
 import hu.bme.vik.aut.service.OnResultListener
 import hu.bme.vik.aut.ui.admindashboard.AdminDashboardActivity
-import hu.bme.vik.aut.ui.admindashboard.adapters.ResidentsList.ResidentsListRecyclerViewAdapter
-import hu.bme.vik.aut.ui.admindashboard.fragments.AddSupplyDialogFragment
-import hu.bme.vik.aut.ui.admindashboard.fragments.AdminSupplyFragment
 import hu.bme.vik.aut.ui.householdselector.adapters.householdlist.HouseholdListRecyclerViewAdapter
 import hu.bme.vik.aut.ui.householdselector.fragments.AddHouseholdDialogFragment
+import hu.bme.vik.aut.ui.login.LoginActivity
 
 class HouseHoldSelectorActivity : AppCompatActivity(), HouseholdListRecyclerViewAdapter.HouseholdListRecyclerViewListener, AddHouseholdDialogFragment.AddHouseholdDialogFragmentListener {
 
@@ -37,7 +38,7 @@ class HouseHoldSelectorActivity : AppCompatActivity(), HouseholdListRecyclerView
         loadingProgressBar = binding.householdsLoadingProgressBar
         loadingProgressBar.visibility = View.VISIBLE
         floatingActionButton = binding.floatingActionButton
-
+        setSupportActionBar(binding.toolbar)
         adminId = FirebaseAuth.getInstance().currentUser!!.uid
         floatingActionButton.setOnClickListener{
             AddHouseholdDialogFragment(this).show(this.supportFragmentManager, AddHouseholdDialogFragment.TAG)
@@ -52,11 +53,27 @@ class HouseHoldSelectorActivity : AppCompatActivity(), HouseholdListRecyclerView
         setContentView(binding.root)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.household_menu_actions, menu)
+
+        val item = menu?.findItem(R.id.menu_logout) as MenuItem
+
+        item.setOnMenuItemClickListener {
+            Firebase.auth.signOut()
+            startActivity(Intent(this, LoginActivity::class.java))
+            setResult(Activity.RESULT_OK)
+            finish()
+            true
+        }
+
+        return true
+    }
+
     private fun loadHouseholds() {
         val adminId = FirebaseAuth.getInstance().currentUser?.uid.toString()
         HouseholdsService.getInstance().getHouseholdsForAdmin(adminId, object : OnResultListener<List<Household>>{
-            override fun onSuccess(households: List<Household>) {
-                householdsRecyclerViewAdapter.setHouseholds(households)
+            override fun onSuccess(result: List<Household>) {
+                householdsRecyclerViewAdapter.setHouseholds(result)
                 loadingProgressBar.visibility = View.GONE
             }
 
@@ -92,13 +109,13 @@ class HouseHoldSelectorActivity : AppCompatActivity(), HouseholdListRecyclerView
     override fun onHouseholdAdded(newHousehold: Household) {
         newHousehold.adminId = adminId
         HouseholdsService.getInstance().addHousehold(newHousehold, object: OnResultListener<String>{
-            override fun onSuccess(id: String) {
-                newHousehold.id = id
+            override fun onSuccess(result: String) {
+                newHousehold.id = result
                 householdsRecyclerViewAdapter.addHousehold(newHousehold)
             }
 
             override fun onError(exception: Exception) {
-                Toast.makeText(this@HouseHoldSelectorActivity, "Error while creating household", Toast.LENGTH_SHORT)
+                Toast.makeText(this@HouseHoldSelectorActivity, "Error while creating household", Toast.LENGTH_SHORT).show()
             }
         })
     }

@@ -2,27 +2,23 @@ package hu.bme.vik.aut.ui.login
 
 import android.app.Activity
 import android.content.Intent
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
-import hu.bme.vik.aut.databinding.ActivityLoginBinding
-
 import hu.bme.vik.aut.R
+import hu.bme.vik.aut.databinding.ActivityLoginBinding
 import hu.bme.vik.aut.ui.admindashboard.AdminDashboardActivity
 import hu.bme.vik.aut.ui.householdselector.HouseHoldSelectorActivity
 
@@ -145,6 +141,7 @@ class LoginActivity : AppCompatActivity() {
                         setResult(Activity.RESULT_OK)
                         finish()
                     } else {
+                        // TODO: ResidentDashboardActivity NOT IMPLEMENTED
                         showLoginFailed("ResidentDashboardActivity NOT IMPLEMENTED")
                         //startActivity(Intent(this, ResidentDashboardActivity::class.java))
                         //setResult(Activity.RESULT_OK)
