@@ -55,4 +55,9 @@
     <string name="current_consumption">Current Consumption:</string>
     <string name="units">unit(s)</string>
     <string name="add_supply_dialog_title">Add Supply</string>
+    <string name="logout">Logout</string>
+    <string name="hint_enter_name">Enter name</string>
+    <string name="btn_join_household">Join household</string>
+    <string name="btn_create_household">Create household</string>
+    <string name="btn_logout">Logout</string>
 </resources>
