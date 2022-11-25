@@ -65,6 +65,23 @@ class ResidentsService private constructor(private val db: DatabaseReference) {
             onResultListener.onError(it)
         }
     }
+
+    fun getResidentStatus(residentId: String, onResultListener: OnResultListener<ResidentStatus>) {
+        db.child("users").child(residentId).child("status").get().addOnSuccessListener {
+            when (it.value) {
+                "HEALTHY" -> onResultListener.onSuccess(ResidentStatus.HEALTHY)
+                "SICK" -> onResultListener.onSuccess(ResidentStatus.SICK)
+                else -> onResultListener.onError(Exception("Status error!"))
+            }
+        }.addOnFailureListener { onResultListener.onError(it) }
+    }
+
+    fun setResidentStatus(residentId: String, result: ResidentStatus, onResultListener: OnResultListener<Boolean>) {
+        db.child("users").child(residentId).child("status").setValue(result)
+            .addOnSuccessListener { onResultListener.onSuccess(true) }
+            .addOnFailureListener { onResultListener.onError(it) }
+    }
+
     companion object{
         private var INSTANCE : ResidentsService? = null
 

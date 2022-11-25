@@ -5,12 +5,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.google.firebase.ktx.Firebase
 import hu.bme.vik.aut.R
+import hu.bme.vik.aut.data.Resident
+import hu.bme.vik.aut.data.ResidentStatus
 import hu.bme.vik.aut.databinding.ActivityHouseholdUserBinding
+import hu.bme.vik.aut.service.OnResultListener
+import hu.bme.vik.aut.service.ResidentsService
 import hu.bme.vik.aut.ui.login.LoginActivity
 
 class ResidentDashboardActivity : AppCompatActivity() {
@@ -20,24 +25,43 @@ class ResidentDashboardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHouseholdUserBinding.inflate(layoutInflater)
-
         setSupportActionBar(binding.residentToolbar)
 
-        loadResidentStatus()
+        ResidentsService.getInstance().getResidentStatus(Firebase.auth.uid!!, residentStatusResult)
+        binding.btnSetStatus.setOnClickListener { setStatus() }
+
         setContentView(binding.root)
     }
 
-    private fun loadResidentStatus() {
-        FirebaseDatabase.getInstance().reference
-            .child("users")
-            .child(Firebase.auth.currentUser?.uid!!)
-            .child("status").get()
-            .addOnSuccessListener {
-                when (it.value) {
-                    "HEALTHY" -> binding.residentStatusRadioGroup.check(R.id.rbHealthy)
-                    "SICK" -> binding.residentStatusRadioGroup.check(R.id.rbSick)
-                }
+    private val residentStatusResult = object : OnResultListener<ResidentStatus> {
+        override fun onSuccess(result: ResidentStatus) {
+            when (result) {
+                ResidentStatus.HEALTHY -> binding.residentStatusRadioGroup.check(R.id.rbHealthy)
+                ResidentStatus.SICK -> binding.residentStatusRadioGroup.check(R.id.rbSick)
             }
+        }
+
+        override fun onError(exception: Exception) {
+            Toast.makeText(baseContext, exception.message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun setStatus() {
+        val status: ResidentStatus
+        when (binding.residentStatusRadioGroup.checkedRadioButtonId) {
+            R.id.rbHealthy -> status = ResidentStatus.HEALTHY
+            R.id.rbSick -> status = ResidentStatus.SICK
+            else -> status = ResidentStatus.HEALTHY
+        }
+        ResidentsService.getInstance().setResidentStatus(Firebase.auth.uid!!, status, object : OnResultListener<Boolean> {
+            override fun onSuccess(result: Boolean) {
+                Toast.makeText(baseContext, "Successfully set to $status", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onError(exception: Exception) {
+                Toast.makeText(baseContext, "Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
