@@ -142,7 +142,6 @@ class HouseHoldSelectorActivity(private val is_admin_household_selector: Boolean
     }
 
     override fun householdItemClicked(household: Household) {
-        val ctx = this
         if (is_admin_household_selector) {
             val intent = Intent(this, AdminDashboardActivity::class.java)
             intent.putExtra(AdminDashboardActivity.HOUSEHOLD_ID_ARGUMENT_NAME, household.id)
@@ -151,7 +150,7 @@ class HouseHoldSelectorActivity(private val is_admin_household_selector: Boolean
             ResidentsService.getInstance().setIsHouseholdIDForResident(userId, household.id!!, object: OnResultListener<Boolean> {
                 override fun onSuccess(result: Boolean) {
                     if (result) {
-                        val intent = Intent(ctx, ResidentDashboardActivity::class.java)
+                        val intent = Intent(this@HouseHoldSelectorActivity, ResidentDashboardActivity::class.java)
                         intent.putExtra(AdminDashboardActivity.HOUSEHOLD_ID_ARGUMENT_NAME, household.id)
                         startActivity(intent)
                     } else {
