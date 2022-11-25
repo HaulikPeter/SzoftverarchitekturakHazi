@@ -20,7 +20,7 @@ import com.google.firebase.ktx.Firebase
 import hu.bme.vik.aut.R
 import hu.bme.vik.aut.databinding.ActivityLoginBinding
 import hu.bme.vik.aut.ui.householdselector.HouseHoldSelectorActivity
-import hu.bme.vik.aut.ui.residentdashboard.ResidentDashboardActivity
+import hu.bme.vik.aut.ui.residentDashboard.ResidentDashboardActivity
 
 class LoginActivity : AppCompatActivity() {
 
