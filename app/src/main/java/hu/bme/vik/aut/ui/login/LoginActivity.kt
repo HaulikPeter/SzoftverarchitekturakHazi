@@ -124,7 +124,7 @@ class LoginActivity : AppCompatActivity() {
         db.child("users").child(auth.currentUser?.uid.toString()).get()
             .addOnSuccessListener {
                 if (it.exists()) {
-                    if (it.child("admin").exists() && it.child("admin").value == true) {
+                    if (it.child("admin").exists() and it.child("admin").value as Boolean) {
                         intent = Intent(this, HouseHoldSelectorActivity::class.java)
                         intent.putExtra(HouseHoldSelectorActivity.IS_ADMIN_PARAMETER_KEY, true)
                         startActivity(intent)
@@ -139,23 +139,9 @@ class LoginActivity : AppCompatActivity() {
                     }
 
                 } else {
-                    val user = auth.currentUser!!
-                    ResidentsService.getInstance().initUserData(user, object: OnResultListener<Boolean> {
-                        override fun onSuccess(result: Boolean) {
-                            if (result) {
-                                startActivity(Intent(this@LoginActivity, LoggedInUserActivity::class.java))
-                                setResult(Activity.RESULT_OK)
-                                finish()
-                            } else {
-                                Toast.makeText(this@LoginActivity, "Error registering user, please try again!", Toast.LENGTH_SHORT)
-                            }
-                        }
-
-                        override fun onError(exception: Exception) {
-                            Toast.makeText(this@LoginActivity, "Error registering user, please try again!", Toast.LENGTH_SHORT)
-                        }
-                    })
-
+                    startActivity(Intent(this, LoggedInUserActivity::class.java))
+                    setResult(Activity.RESULT_OK)
+                    finish()
                 }
             }.addOnFailureListener {
                 showLoginFailed(R.string.login_failed)
