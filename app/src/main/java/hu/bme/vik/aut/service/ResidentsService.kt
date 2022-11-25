@@ -7,7 +7,6 @@ import hu.bme.vik.aut.data.ResidentStatus
 
 class ResidentsService private constructor(private val db: DatabaseReference) {
 
-
     fun removeResidentFromHousehold(residentId: String, onResultListener: OnResultListener<Boolean>) {
         db.child("users").child(residentId).removeValue().addOnSuccessListener {
             onResultListener.onSuccess(true)

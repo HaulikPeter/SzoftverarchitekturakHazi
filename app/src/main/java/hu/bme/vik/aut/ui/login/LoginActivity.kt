@@ -122,8 +122,7 @@ class LoginActivity : AppCompatActivity() {
         db.child("users").child(auth.currentUser?.uid.toString()).get()
             .addOnSuccessListener {
                 if (it.exists()) {
-                    if (it.child("is_admin").exists() && it.child("is_admin").value == true) {
-
+                    if (it.child("admin").exists() and it.child("admin").value as Boolean) {
                         intent = Intent(this, HouseHoldSelectorActivity::class.java)
                         startActivity(intent)
                         setResult(Activity.RESULT_OK)
@@ -144,6 +143,8 @@ class LoginActivity : AppCompatActivity() {
             }.addOnFailureListener {
                 showLoginFailed(R.string.login_failed)
             }
+
+
     }
 
     private fun showLoginFailed(@StringRes errorString: Int) {
