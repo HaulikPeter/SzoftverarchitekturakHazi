@@ -143,9 +143,22 @@ class LoginActivity : AppCompatActivity() {
                     }
 
                 } else {
-                    startActivity(Intent(this, LoggedInUserActivity::class.java))
-                    setResult(Activity.RESULT_OK)
-                    finish()
+                    val user = auth.currentUser!!
+                    ResidentsService.getInstance().initUserData(user, object: OnResultListener<Boolean> {
+                        override fun onSuccess(result: Boolean) {
+                            if (result) {
+                                startActivity(Intent(this@LoginActivity, LoggedInUserActivity::class.java))
+                                setResult(Activity.RESULT_OK)
+                                finish()
+                            } else {
+                                Toast.makeText(this@LoginActivity, "Error registering user, please try again!", Toast.LENGTH_SHORT)
+                            }
+                        }
+
+                        override fun onError(exception: Exception) {
+                            Toast.makeText(this@LoginActivity, "Error registering user, please try again!", Toast.LENGTH_SHORT)
+                        }
+                    })
                 }
             }.addOnFailureListener {
                 showLoginFailed(R.string.login_failed)
