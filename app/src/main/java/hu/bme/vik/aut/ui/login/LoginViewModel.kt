@@ -63,7 +63,7 @@ class LoginViewModel : ViewModel() {
                     _loginResult.value = LoginResult(
                         success = LoggedInUserView(uid = user.uid, displayName = user.displayName))
                 } else {
-                    _loginResult.value = LoginResult(error = R.string.login_failed, desc = "Failed to register")
+                    _loginResult.value = LoginResult(error = R.string.login_failed, desc = "Failed to register: ${task.exception?.message}")
                 }
             }
     }

@@ -47,8 +47,8 @@ class HouseHoldSelectorActivity() : AppCompatActivity(), HouseholdListRecyclerVi
         is_admin_household_selector = intent.getBooleanExtra(IS_ADMIN_PARAMETER_KEY, false)
 
         if(is_admin_household_selector) {
+            floatingActionButton.show()
             floatingActionButton.setOnClickListener{
-                floatingActionButton.show()
                 AddHouseholdDialogFragment(this).show(this.supportFragmentManager, AddHouseholdDialogFragment.TAG)
             }
         } else {
@@ -155,6 +155,8 @@ class HouseHoldSelectorActivity() : AppCompatActivity(), HouseholdListRecyclerVi
                         val intent = Intent(this@HouseHoldSelectorActivity, ResidentDashboardActivity::class.java)
                         intent.putExtra(AdminDashboardActivity.HOUSEHOLD_ID_ARGUMENT_NAME, household.id)
                         startActivity(intent)
+                        setResult(Activity.RESULT_OK)
+                        finish()
                     } else {
                         Toast.makeText(this@HouseHoldSelectorActivity, "Error registering resident to household, please try again!", Toast.LENGTH_SHORT)
                     }

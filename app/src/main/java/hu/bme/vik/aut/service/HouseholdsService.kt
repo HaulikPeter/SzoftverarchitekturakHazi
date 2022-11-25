@@ -1,5 +1,6 @@
 package hu.bme.vik.aut.service
 
+import androidx.activity.result.contract.ActivityResultContracts
 import com.google.firebase.database.*
 import hu.bme.vik.aut.data.Household
 import java.util.UUID
@@ -102,6 +103,25 @@ class HouseholdsService private constructor(val db: DatabaseReference) {
                 }
             })
     }
+
+    fun getHouseholdForResident(residentId: String, onResultListener: OnResultListener<Household>) {
+        db.child("users").child(residentId).child("household_id").get()
+            .addOnSuccessListener { getHousehold(it.value as String, onResultListener) }
+            .addOnFailureListener { onResultListener.onError(it) }
+    }
+
+    fun getHousehold(householdId: String, onResultListener: OnResultListener<Household>) {
+        db.child("households").child(householdId).get()
+            .addOnSuccessListener {
+                onResultListener.onSuccess(
+                    Household(householdId,
+                        it.child("name").value.toString(),
+                        it.child("admin_id").value.toString()
+                    ))
+            }
+            .addOnFailureListener { onResultListener.onError(it) }
+    }
+
     companion object{
         private var INSTANCE : HouseholdsService? = null
 

@@ -48,15 +48,6 @@
         <activity
             android:name=".ui.residentDashboard.ResidentDashboardActivity"
             android:exported="false"
-            android:label="@string/title_activity_admin_dashboard"
-            android:theme="@style/Theme.QuarantineCalorieCalc">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-
-        <activity android:name=".ui.residentDashboard.ResidentDashboardActivity"
-            android:exported="false"
             android:label="Resident Dashboard"
             android:theme="@style/Theme.QuarantineCalorieCalc.NoActionBar">
             <meta-data

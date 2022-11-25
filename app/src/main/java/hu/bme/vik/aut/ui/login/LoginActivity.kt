@@ -124,15 +124,13 @@ class LoginActivity : AppCompatActivity() {
         db.child("users").child(auth.currentUser?.uid.toString()).get()
             .addOnSuccessListener {
                 if (it.exists()) {
-                    if (it.child("admin").exists() and it.child("admin").value as Boolean) {
+                    if (it.child("admin").exists() && it.child("admin").value as Boolean) {
                         intent = Intent(this, HouseHoldSelectorActivity::class.java)
                         intent.putExtra(HouseHoldSelectorActivity.IS_ADMIN_PARAMETER_KEY, true)
                         startActivity(intent)
                         setResult(Activity.RESULT_OK)
                         finish()
                     } else if (it.child("household_id").exists() ) {
-                        // TODO: ResidentDashboardActivity NOT IMPLEMENTED
-                        //showLoginFailed("ResidentDashboardActivity NOT IMPLEMENTED")
                         startActivity(Intent(this, ResidentDashboardActivity::class.java))
                         setResult(Activity.RESULT_OK)
                         finish()
@@ -151,12 +149,12 @@ class LoginActivity : AppCompatActivity() {
                                 setResult(Activity.RESULT_OK)
                                 finish()
                             } else {
-                                Toast.makeText(this@LoginActivity, "Error registering user, please try again!", Toast.LENGTH_SHORT)
+                                Toast.makeText(this@LoginActivity, "Error registering user, please try again!", Toast.LENGTH_SHORT).show()
                             }
                         }
 
                         override fun onError(exception: Exception) {
-                            Toast.makeText(this@LoginActivity, "Error registering user, please try again!", Toast.LENGTH_SHORT)
+                            Toast.makeText(this@LoginActivity, "Error registering user, please try again!", Toast.LENGTH_SHORT).show()
                         }
                     })
                 }
@@ -166,14 +164,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun showLoginFailed(@StringRes errorString: Int) {
-        if (loginViewModel.loginResult.value?.desc != null)
-            Toast.makeText(applicationContext, loginViewModel.loginResult.value?.desc, Toast.LENGTH_SHORT).show()
-        else
-            Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
-    }
-
-    // TODO: remove just for test
-    private fun showLoginFailed(errorString: String) {
         if (loginViewModel.loginResult.value?.desc != null)
             Toast.makeText(applicationContext, loginViewModel.loginResult.value?.desc, Toast.LENGTH_SHORT).show()
         else
