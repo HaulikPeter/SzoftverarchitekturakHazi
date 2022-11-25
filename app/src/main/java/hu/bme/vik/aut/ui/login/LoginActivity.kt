@@ -19,6 +19,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 import hu.bme.vik.aut.R
 import hu.bme.vik.aut.databinding.ActivityLoginBinding
+import hu.bme.vik.aut.service.OnResultListener
+import hu.bme.vik.aut.service.ResidentsService
 import hu.bme.vik.aut.ui.householdselector.HouseHoldSelectorActivity
 import hu.bme.vik.aut.ui.residentDashboard.ResidentDashboardActivity
 
@@ -122,9 +124,9 @@ class LoginActivity : AppCompatActivity() {
         db.child("users").child(auth.currentUser?.uid.toString()).get()
             .addOnSuccessListener {
                 if (it.exists()) {
-                    if (it.child("is_admin").exists() && it.child("is_admin").value == true) {
-
+                    if (it.child("admin").exists() && it.child("admin").value == true) {
                         intent = Intent(this, HouseHoldSelectorActivity::class.java)
+                        intent.putExtra(HouseHoldSelectorActivity.IS_ADMIN_PARAMETER_KEY, true)
                         startActivity(intent)
                         setResult(Activity.RESULT_OK)
                         finish()
@@ -137,9 +139,23 @@ class LoginActivity : AppCompatActivity() {
                     }
 
                 } else {
-                    startActivity(Intent(this, LoggedInUserActivity::class.java))
-                    setResult(Activity.RESULT_OK)
-                    finish()
+                    val user = auth.currentUser!!
+                    ResidentsService.getInstance().initUserData(user, object: OnResultListener<Boolean> {
+                        override fun onSuccess(result: Boolean) {
+                            if (result) {
+                                startActivity(Intent(this@LoginActivity, LoggedInUserActivity::class.java))
+                                setResult(Activity.RESULT_OK)
+                                finish()
+                            } else {
+                                Toast.makeText(this@LoginActivity, "Error registering user, please try again!", Toast.LENGTH_SHORT)
+                            }
+                        }
+
+                        override fun onError(exception: Exception) {
+                            Toast.makeText(this@LoginActivity, "Error registering user, please try again!", Toast.LENGTH_SHORT)
+                        }
+                    })
+
                 }
             }.addOnFailureListener {
                 showLoginFailed(R.string.login_failed)

@@ -11,6 +11,8 @@ class ResidentDashboardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHouseholdUserBinding.inflate(layoutInflater)
+
+        setContentView(binding.root)
     }
 
 }

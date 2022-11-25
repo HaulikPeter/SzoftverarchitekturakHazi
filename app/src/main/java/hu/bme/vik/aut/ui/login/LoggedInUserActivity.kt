@@ -11,6 +11,7 @@ import hu.bme.vik.aut.databinding.ActivityLoggedInUserBinding
 import hu.bme.vik.aut.service.OnResultListener
 import hu.bme.vik.aut.service.ResidentsService
 import hu.bme.vik.aut.ui.householdselector.HouseHoldSelectorActivity
+import hu.bme.vik.aut.ui.residentDashboard.ResidentDashboardActivity
 
 class LoggedInUserActivity : AppCompatActivity() {
 
@@ -24,12 +25,25 @@ class LoggedInUserActivity : AppCompatActivity() {
 
 
         binding.btnJoinHousehold.setOnClickListener {
-
+            ResidentsService.getInstance().setIsAdminForResident(Firebase.auth.currentUser!!.uid, false, object: OnResultListener<Boolean> {
+                override fun onSuccess(result: Boolean) {
+                    val intent = Intent(this@LoggedInUserActivity, HouseHoldSelectorActivity::class.java)
+                    intent.putExtra(HouseHoldSelectorActivity.IS_ADMIN_PARAMETER_KEY, false)
+                    startActivity(intent)
+                    setResult(Activity.RESULT_OK)
+                    finish()
+                }
+                override fun onError(exception: Exception) {
+                    Toast.makeText(this@LoggedInUserActivity, "Error registering user please try again!", Toast.LENGTH_SHORT)
+                }
+            })
         }
         binding.btnCreateHousehold.setOnClickListener{
-            intent = Intent(this, HouseHoldSelectorActivity::class.java)
+
             ResidentsService.getInstance().setIsAdminForResident(Firebase.auth.currentUser!!.uid, true, object: OnResultListener<Boolean> {
                 override fun onSuccess(result: Boolean) {
+                    val intent = Intent(this@LoggedInUserActivity, HouseHoldSelectorActivity::class.java)
+                    intent.putExtra(HouseHoldSelectorActivity.IS_ADMIN_PARAMETER_KEY, true)
                     startActivity(intent)
                     setResult(Activity.RESULT_OK)
                     finish()

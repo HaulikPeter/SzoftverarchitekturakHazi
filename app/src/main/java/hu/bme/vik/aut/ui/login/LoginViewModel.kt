@@ -62,7 +62,6 @@ class LoginViewModel : ViewModel() {
                     val user = auth.currentUser!!
                     _loginResult.value = LoginResult(
                         success = LoggedInUserView(uid = user.uid, displayName = user.displayName))
-                    ResidentsService.getInstance().initUserData(user)
                 } else {
                     _loginResult.value = LoginResult(error = R.string.login_failed, desc = "Failed to register")
                 }

@@ -42,13 +42,17 @@ class ResidentsService private constructor(private val db: DatabaseReference) {
             })
     }
 
-    fun initUserData(user: FirebaseUser) {
+    fun initUserData(user: FirebaseUser, onResultListener: OnResultListener<Boolean>) {
         db.child("users").child(user.uid).child("display_name")
-            .setValue(user.email.orEmpty().substringBefore('@'))
+            .setValue(user.email.orEmpty().substringBefore('@')).addOnSuccessListener {
+            onResultListener.onSuccess(true)
+        }.addOnFailureListener {
+            onResultListener.onError(it)
+        }
     }
 
     fun setIsAdminForResident(residentId: String, isAdmin: Boolean, onResultListener: OnResultListener<Boolean>) {
-        db.child("users").child(residentId).child("is_admin").setValue(isAdmin).addOnSuccessListener {
+        db.child("users").child(residentId).child("admin").setValue(isAdmin).addOnSuccessListener {
             onResultListener.onSuccess(true)
         }.addOnFailureListener {
             onResultListener.onError(it)

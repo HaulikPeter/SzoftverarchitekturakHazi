@@ -27,13 +27,14 @@ import hu.bme.vik.aut.ui.login.LoginActivity
 import hu.bme.vik.aut.ui.residentDashboard.ResidentDashboardActivity
 import kotlin.concurrent.thread
 
-class HouseHoldSelectorActivity(private val is_admin_household_selector: Boolean) : AppCompatActivity(), HouseholdListRecyclerViewAdapter.HouseholdListRecyclerViewListener, AddHouseholdDialogFragment.AddHouseholdDialogFragmentListener {
+class HouseHoldSelectorActivity() : AppCompatActivity(), HouseholdListRecyclerViewAdapter.HouseholdListRecyclerViewListener, AddHouseholdDialogFragment.AddHouseholdDialogFragmentListener {
 
     lateinit var binding: ActivityHouseHoldSelectorBinding
     lateinit var householdsRecyclerViewAdapter: HouseholdListRecyclerViewAdapter
     lateinit var loadingProgressBar: ProgressBar
     lateinit var floatingActionButton: FloatingActionButton
     lateinit var userId: String
+    var is_admin_household_selector: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +44,7 @@ class HouseHoldSelectorActivity(private val is_admin_household_selector: Boolean
         floatingActionButton = binding.floatingActionButton
         setSupportActionBar(binding.toolbar)
         userId = FirebaseAuth.getInstance().currentUser!!.uid
+        is_admin_household_selector = intent.getBooleanExtra(IS_ADMIN_PARAMETER_KEY, false)
 
         if(is_admin_household_selector) {
             floatingActionButton.setOnClickListener{
@@ -181,5 +183,9 @@ class HouseHoldSelectorActivity(private val is_admin_household_selector: Boolean
                 Toast.makeText(this@HouseHoldSelectorActivity, "Error while creating household", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    companion object {
+        val IS_ADMIN_PARAMETER_KEY = "IS_ADMIN_PARAM"
     }
 }
