@@ -130,10 +130,14 @@ class LoginActivity : AppCompatActivity() {
                         startActivity(intent)
                         setResult(Activity.RESULT_OK)
                         finish()
-                    } else {
+                    } else if (it.child("household_id").exists() ) {
                         // TODO: ResidentDashboardActivity NOT IMPLEMENTED
                         //showLoginFailed("ResidentDashboardActivity NOT IMPLEMENTED")
                         startActivity(Intent(this, ResidentDashboardActivity::class.java))
+                        setResult(Activity.RESULT_OK)
+                        finish()
+                    } else {
+                        startActivity(Intent(this, LoggedInUserActivity::class.java))
                         setResult(Activity.RESULT_OK)
                         finish()
                     }
