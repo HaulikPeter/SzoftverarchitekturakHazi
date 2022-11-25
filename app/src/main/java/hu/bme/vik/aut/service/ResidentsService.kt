@@ -47,6 +47,13 @@ class ResidentsService private constructor(private val db: DatabaseReference) {
             .setValue(user.email.orEmpty().substringBefore('@'))
     }
 
+    fun setIsAdminForResident(residentId: String, isAdmin: Boolean, onResultListener: OnResultListener<Boolean>) {
+        db.child("users").child(residentId).child("is_admin").setValue(isAdmin).addOnSuccessListener {
+            onResultListener.onSuccess(true)
+        }.addOnFailureListener {
+            onResultListener.onError(it)
+        }
+    }
     companion object{
         private var INSTANCE : ResidentsService? = null
 

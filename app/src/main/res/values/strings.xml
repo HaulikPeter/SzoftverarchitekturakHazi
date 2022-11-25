@@ -57,7 +57,7 @@
     <string name="add_supply_dialog_title">Add Supply</string>
     <string name="logout">Logout</string>
     <string name="hint_enter_name">Enter name</string>
-    <string name="btn_join_household">Join household</string>
+    <string name="btn_join_household">Join a household</string>
     <string name="btn_create_household">Create household</string>
     <string name="btn_logout">Logout</string>
     <string name="user_menu_item_status">Status</string>

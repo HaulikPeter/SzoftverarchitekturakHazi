@@ -20,7 +20,7 @@ import com.google.firebase.ktx.Firebase
 import hu.bme.vik.aut.R
 import hu.bme.vik.aut.databinding.ActivityLoginBinding
 import hu.bme.vik.aut.ui.householdselector.HouseHoldSelectorActivity
-import hu.bme.vik.aut.ui.residentDashboard.ResidentDashboardActivity
+import hu.bme.vik.aut.ui.residentdashboard.ResidentDashboardActivity
 
 class LoginActivity : AppCompatActivity() {
 
@@ -122,7 +122,8 @@ class LoginActivity : AppCompatActivity() {
         db.child("users").child(auth.currentUser?.uid.toString()).get()
             .addOnSuccessListener {
                 if (it.exists()) {
-                    if (it.child("admin").exists()) {
+                    if (it.child("is_admin").exists() && it.child("is_admin").value == true) {
+
                         intent = Intent(this, HouseHoldSelectorActivity::class.java)
                         startActivity(intent)
                         setResult(Activity.RESULT_OK)
@@ -143,8 +144,6 @@ class LoginActivity : AppCompatActivity() {
             }.addOnFailureListener {
                 showLoginFailed(R.string.login_failed)
             }
-
-
     }
 
     private fun showLoginFailed(@StringRes errorString: Int) {
