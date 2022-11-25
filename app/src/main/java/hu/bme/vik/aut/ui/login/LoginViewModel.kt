@@ -7,10 +7,13 @@ import android.util.Patterns
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 
 import hu.bme.vik.aut.R
+import hu.bme.vik.aut.service.ResidentsService
 
 class LoginViewModel : ViewModel() {
 
@@ -58,8 +61,8 @@ class LoginViewModel : ViewModel() {
                 if (task.isSuccessful) {
                     val user = auth.currentUser!!
                     _loginResult.value = LoginResult(
-                        success = LoggedInUserView(uid = user.uid, displayName = user.displayName)
-                    )
+                        success = LoggedInUserView(uid = user.uid, displayName = user.displayName))
+                    ResidentsService.getInstance().initUserData(user)
                 } else {
                     _loginResult.value = LoginResult(error = R.string.login_failed, desc = "Failed to register")
                 }

@@ -18,6 +18,12 @@ class LoggedInUserActivity : AppCompatActivity() {
         binding = ActivityLoggedInUserBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.btnJoinHousehold.setOnClickListener { }
+
+        binding.btnCreateHousehold.setOnClickListener {
+
+        }
+
         binding.btnLogout.setOnClickListener {
             Firebase.auth.signOut()
             startActivity(Intent(this, LoginActivity::class.java))

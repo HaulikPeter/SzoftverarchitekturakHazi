@@ -19,8 +19,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 import hu.bme.vik.aut.R
 import hu.bme.vik.aut.databinding.ActivityLoginBinding
-import hu.bme.vik.aut.ui.admindashboard.AdminDashboardActivity
 import hu.bme.vik.aut.ui.householdselector.HouseHoldSelectorActivity
+import hu.bme.vik.aut.ui.residentDashboard.ResidentDashboardActivity
 
 class LoginActivity : AppCompatActivity() {
 
@@ -39,18 +39,9 @@ class LoginActivity : AppCompatActivity() {
         val password = binding.password
         val login = binding.login
         val loading = binding.loading
-        val adminDasboardTestButton = binding.adminDashboardTestButton
-        adminDasboardTestButton.setOnClickListener{
-            val intent = Intent(this, AdminDashboardActivity::class.java)
-            intent.putExtra(AdminDashboardActivity.HOUSEHOLD_ID_ARGUMENT_NAME, "0")
-            startActivity(intent)
-        }
 
         auth = Firebase.auth
         if (auth.currentUser != null) {
-//            startActivity(Intent(this, AdminDashboardActivity::class.java))
-//            setResult(Activity.RESULT_OK)
-//            finish()
             updateUiWithUser(null)
         }
 
@@ -80,10 +71,6 @@ class LoginActivity : AppCompatActivity() {
             if (loginResult.success != null) {
                 updateUiWithUser(loginResult.success)
             }
-            //setResult(Activity.RESULT_OK)
-
-            //Complete and destroy login activity once successful
-            //finish()
         })
 
         username.afterTextChanged {
@@ -135,17 +122,17 @@ class LoginActivity : AppCompatActivity() {
         db.child("users").child(auth.currentUser?.uid.toString()).get()
             .addOnSuccessListener {
                 if (it.exists()) {
-                    if (it.child("is_admin").exists()) {
+                    if (it.child("admin").exists()) {
                         intent = Intent(this, HouseHoldSelectorActivity::class.java)
                         startActivity(intent)
                         setResult(Activity.RESULT_OK)
                         finish()
                     } else {
                         // TODO: ResidentDashboardActivity NOT IMPLEMENTED
-                        showLoginFailed("ResidentDashboardActivity NOT IMPLEMENTED")
-                        //startActivity(Intent(this, ResidentDashboardActivity::class.java))
-                        //setResult(Activity.RESULT_OK)
-                        //finish()
+                        //showLoginFailed("ResidentDashboardActivity NOT IMPLEMENTED")
+                        startActivity(Intent(this, ResidentDashboardActivity::class.java))
+                        setResult(Activity.RESULT_OK)
+                        finish()
                     }
 
                 } else {

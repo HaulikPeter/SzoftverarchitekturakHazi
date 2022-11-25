@@ -54,7 +54,7 @@ class HouseHoldSelectorActivity : AppCompatActivity(), HouseholdListRecyclerView
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.household_menu_actions, menu)
+        menuInflater.inflate(R.menu.user_menu_actions, menu)
 
         val item = menu?.findItem(R.id.menu_logout) as MenuItem
 

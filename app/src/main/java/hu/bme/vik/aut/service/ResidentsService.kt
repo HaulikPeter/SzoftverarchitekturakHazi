@@ -1,10 +1,11 @@
 package hu.bme.vik.aut.service
 
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import hu.bme.vik.aut.data.Resident
 import hu.bme.vik.aut.data.ResidentStatus
 
-class ResidentsService private constructor(val db: DatabaseReference) {
+class ResidentsService private constructor(private val db: DatabaseReference) {
 
 
     fun removeResidentFromHousehold(residentId: String, onResultListener: OnResultListener<Boolean>) {
@@ -14,6 +15,7 @@ class ResidentsService private constructor(val db: DatabaseReference) {
             onResultListener.onError(it)
         }
     }
+
     fun getResidentsInHousehold(householdId: String, onResultListener: OnResultListener<List<Resident>> ) {
         db.child("users").orderByChild("household_id").equalTo(householdId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
@@ -39,6 +41,12 @@ class ResidentsService private constructor(val db: DatabaseReference) {
                 }
             })
     }
+
+    fun initUserData(user: FirebaseUser) {
+        db.child("users").child(user.uid).child("display_name")
+            .setValue(user.email.orEmpty().substringBefore('@'))
+    }
+
     companion object{
         private var INSTANCE : ResidentsService? = null
 

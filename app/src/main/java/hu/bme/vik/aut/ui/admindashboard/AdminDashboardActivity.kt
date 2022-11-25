@@ -1,10 +1,8 @@
 package hu.bme.vik.aut.ui.admindashboard
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import androidx.core.os.bundleOf
-import androidx.navigation.NavArgument
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.NavHostFragment
@@ -29,6 +27,7 @@ class AdminDashboardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAdminDashboardBinding.inflate(layoutInflater)
+
         val bottomNavigationBar = binding.bottomNavBar
         householdId = intent.getStringExtra(HOUSEHOLD_ID_ARGUMENT_NAME)!!
 
