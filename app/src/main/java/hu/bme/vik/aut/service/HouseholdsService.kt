@@ -53,8 +53,31 @@ class HouseholdsService private constructor(val db: DatabaseReference) {
 
 
     }
-
-    fun getHouseholdsForAdmin (adminId: String, onResultListener: OnResultListener<List<Household>>) {
+    fun getAllHouseholds (onResultListener: OnResultListener<List<Household>>) {
+        db.child("households").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(householdsFromDB: DataSnapshot) {
+                val households = mutableListOf<Household>()
+                if (householdsFromDB.value == null) {
+                    onResultListener.onSuccess(households)
+                    return
+                }
+                val householdsHashMap: HashMap<String, HashMap<String, Any>> = householdsFromDB.value as HashMap<String, HashMap<String, Any>>
+                for ((householdId,householdData) in householdsHashMap) {
+                    val household = Household(
+                        id = householdId,
+                        name =  householdData.getOrDefault("name", "None").toString(),
+                        adminId = householdData.getOrDefault("admin_id", "None").toString()
+                    )
+                    households.add(household)
+                }
+                onResultListener.onSuccess(households)
+            }
+            override fun onCancelled(error: DatabaseError) {
+                onResultListener.onError(Exception(error.message))
+            }
+        })
+    }
+    fun getHouseholdsForAdmin(adminId: String, onResultListener: OnResultListener<List<Household>>) {
         db.child("households").orderByChild("admin_id").equalTo(adminId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(householdsFromDB: DataSnapshot) {

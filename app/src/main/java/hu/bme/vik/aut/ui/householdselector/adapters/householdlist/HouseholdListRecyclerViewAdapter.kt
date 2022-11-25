@@ -1,17 +1,15 @@
 package hu.bme.vik.aut.ui.householdselector.adapters.householdlist
 
 import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import hu.bme.vik.aut.R
 import hu.bme.vik.aut.data.Household
-import hu.bme.vik.aut.ui.admindashboard.AdminDashboardActivity
 
 
-class HouseholdListRecyclerViewAdapter  (val context: Context, val listener: HouseholdListRecyclerViewListener): RecyclerView.Adapter<HouseholdListViewHolder>() {
+class HouseholdListRecyclerViewAdapter  (val context: Context, val listener: HouseholdListRecyclerViewListener, private val should_show_delete_button: Boolean): RecyclerView.Adapter<HouseholdListViewHolder>() {
     interface  HouseholdListRecyclerViewListener {
         fun deleteButtonClickedOnHouseholdItem(household: Household, onResult: (Boolean)->Unit)
         fun householdItemClicked(household: Household)
@@ -29,13 +27,22 @@ class HouseholdListRecyclerViewAdapter  (val context: Context, val listener: Hou
         val household = households[position]
 
         holder.name.text = household.name
-        holder.householdItemWrapper.setOnClickListener{
-            listener.householdItemClicked(household)
+
+        if (should_show_delete_button) {
+            holder.householdItemWrapper.setOnClickListener {
+                listener.householdItemClicked(household)
+            }
+            holder.deleteButton.visibility = View.VISIBLE
+            holder.deleteButton.setOnClickListener {
+                removeHouseholdAtPosition(households.indexOf(household))
+            }
+        } else {
+            holder.deleteButton.visibility = View.INVISIBLE
+            holder.householdItemWrapper.setOnClickListener {
+                listener.householdItemClicked(household)
+            }
         }
 
-        holder.deleteButton.setOnClickListener{
-            removeHouseholdAtPosition(households.indexOf(household))
-        }
     }
 
     override fun getItemCount(): Int {

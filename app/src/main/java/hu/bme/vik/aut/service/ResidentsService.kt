@@ -54,6 +54,14 @@ class ResidentsService private constructor(private val db: DatabaseReference) {
             onResultListener.onError(it)
         }
     }
+
+    fun setIsHouseholdIDForResident(residentId: String, householdId: String, onResultListener: OnResultListener<Boolean>) {
+        db.child("users").child(residentId).child("household_id").setValue(householdId).addOnSuccessListener {
+            onResultListener.onSuccess(true)
+        }.addOnFailureListener {
+            onResultListener.onError(it)
+        }
+    }
     companion object{
         private var INSTANCE : ResidentsService? = null
 

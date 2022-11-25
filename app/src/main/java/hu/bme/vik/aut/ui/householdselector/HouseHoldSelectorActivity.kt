@@ -19,18 +19,21 @@ import hu.bme.vik.aut.data.Household
 import hu.bme.vik.aut.databinding.ActivityHouseHoldSelectorBinding
 import hu.bme.vik.aut.service.HouseholdsService
 import hu.bme.vik.aut.service.OnResultListener
+import hu.bme.vik.aut.service.ResidentsService
 import hu.bme.vik.aut.ui.admindashboard.AdminDashboardActivity
 import hu.bme.vik.aut.ui.householdselector.adapters.householdlist.HouseholdListRecyclerViewAdapter
 import hu.bme.vik.aut.ui.householdselector.fragments.AddHouseholdDialogFragment
 import hu.bme.vik.aut.ui.login.LoginActivity
+import hu.bme.vik.aut.ui.residentDashboard.ResidentDashboardActivity
+import kotlin.concurrent.thread
 
-class HouseHoldSelectorActivity : AppCompatActivity(), HouseholdListRecyclerViewAdapter.HouseholdListRecyclerViewListener, AddHouseholdDialogFragment.AddHouseholdDialogFragmentListener {
+class HouseHoldSelectorActivity(private val is_admin_household_selector: Boolean) : AppCompatActivity(), HouseholdListRecyclerViewAdapter.HouseholdListRecyclerViewListener, AddHouseholdDialogFragment.AddHouseholdDialogFragmentListener {
 
     lateinit var binding: ActivityHouseHoldSelectorBinding
     lateinit var householdsRecyclerViewAdapter: HouseholdListRecyclerViewAdapter
     lateinit var loadingProgressBar: ProgressBar
     lateinit var floatingActionButton: FloatingActionButton
-    lateinit var adminId: String
+    lateinit var userId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,13 +42,20 @@ class HouseHoldSelectorActivity : AppCompatActivity(), HouseholdListRecyclerView
         loadingProgressBar.visibility = View.VISIBLE
         floatingActionButton = binding.floatingActionButton
         setSupportActionBar(binding.toolbar)
-        adminId = FirebaseAuth.getInstance().currentUser!!.uid
-        floatingActionButton.setOnClickListener{
-            AddHouseholdDialogFragment(this).show(this.supportFragmentManager, AddHouseholdDialogFragment.TAG)
+        userId = FirebaseAuth.getInstance().currentUser!!.uid
+
+        if(is_admin_household_selector) {
+            floatingActionButton.setOnClickListener{
+                floatingActionButton.show()
+                AddHouseholdDialogFragment(this).show(this.supportFragmentManager, AddHouseholdDialogFragment.TAG)
+            }
+        } else {
+            floatingActionButton.hide()
         }
 
+
         val householdsRecyclerView = binding.householdsRecyclerView
-        householdsRecyclerViewAdapter = HouseholdListRecyclerViewAdapter(this, this)
+        householdsRecyclerViewAdapter = HouseholdListRecyclerViewAdapter(this, this, is_admin_household_selector)
         householdsRecyclerView.adapter = householdsRecyclerViewAdapter
         householdsRecyclerView.layoutManager = LinearLayoutManager(this)
         loadingProgressBar.visibility = View.VISIBLE
@@ -70,24 +80,55 @@ class HouseHoldSelectorActivity : AppCompatActivity(), HouseholdListRecyclerView
     }
 
     private fun loadHouseholds() {
-        val adminId = FirebaseAuth.getInstance().currentUser?.uid.toString()
-        HouseholdsService.getInstance().getHouseholdsForAdmin(adminId, object : OnResultListener<List<Household>>{
-            override fun onSuccess(result: List<Household>) {
-                householdsRecyclerViewAdapter.setHouseholds(result)
-                loadingProgressBar.visibility = View.GONE
+        thread {
+            if (is_admin_household_selector) {
+                val adminId = FirebaseAuth.getInstance().currentUser?.uid.toString()
+                HouseholdsService.getInstance().getHouseholdsForAdmin(adminId, object : OnResultListener<List<Household>>{
+                    override fun onSuccess(result: List<Household>) {
+                        runOnUiThread{
+                            householdsRecyclerViewAdapter.setHouseholds(result)
+                            loadingProgressBar.visibility = View.GONE
+                        }
+                    }
+
+                    override fun onError(exception: Exception) {
+                        runOnUiThread {
+                            Toast.makeText(this@HouseHoldSelectorActivity, "Error loading households. Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+                            loadingProgressBar.visibility = View.GONE
+                        }
+
+                    }
+                })
+            } else {
+                HouseholdsService.getInstance().getAllHouseholds(object : OnResultListener<List<Household>>{
+                    override fun onSuccess(result: List<Household>) {
+                        runOnUiThread{
+                            householdsRecyclerViewAdapter.setHouseholds(result)
+                            loadingProgressBar.visibility = View.GONE
+                        }
+                    }
+
+                    override fun onError(exception: Exception) {
+                        runOnUiThread {
+                            Toast.makeText(this@HouseHoldSelectorActivity, "Error loading households. Error: ${exception.message}",  Toast.LENGTH_SHORT).show()
+                            loadingProgressBar.visibility = View.GONE
+                        }
+                    }
+                })
             }
 
-            override fun onError(exception: Exception) {
-                Toast.makeText(this@HouseHoldSelectorActivity, "Error loading households. Error: ${exception.message}", Toast.LENGTH_SHORT).show()
-                loadingProgressBar.visibility = View.GONE
-            }
-        })
+        }
+
     }
 
     override fun deleteButtonClickedOnHouseholdItem(
         household: Household,
         onResult: (Boolean) -> Unit
     ) {
+        if(!is_admin_household_selector) {
+            onResult(false)
+            return
+        }
         HouseholdsService.getInstance().removeHousehold(household.id!!, object: OnResultListener<Boolean> {
             override fun onSuccess(result: Boolean) {
                 onResult(result)
@@ -101,13 +142,36 @@ class HouseHoldSelectorActivity : AppCompatActivity(), HouseholdListRecyclerView
     }
 
     override fun householdItemClicked(household: Household) {
-        val intent = Intent(this, AdminDashboardActivity::class.java)
-        intent.putExtra(AdminDashboardActivity.HOUSEHOLD_ID_ARGUMENT_NAME, household.id)
-        startActivity(intent)
+        val ctx = this
+        if (is_admin_household_selector) {
+            val intent = Intent(this, AdminDashboardActivity::class.java)
+            intent.putExtra(AdminDashboardActivity.HOUSEHOLD_ID_ARGUMENT_NAME, household.id)
+            startActivity(intent)
+        } else {
+            ResidentsService.getInstance().setIsHouseholdIDForResident(userId, household.id!!, object: OnResultListener<Boolean> {
+                override fun onSuccess(result: Boolean) {
+                    if (result) {
+                        val intent = Intent(ctx, ResidentDashboardActivity::class.java)
+                        intent.putExtra(AdminDashboardActivity.HOUSEHOLD_ID_ARGUMENT_NAME, household.id)
+                        startActivity(intent)
+                    } else {
+                        Toast.makeText(this@HouseHoldSelectorActivity, "Error registering resident to household, please try again!", Toast.LENGTH_SHORT)
+                    }
+                }
+
+                override fun onError(exception: Exception) {
+                    Toast.makeText(this@HouseHoldSelectorActivity, "Error registering resident to household, please try again!", Toast.LENGTH_SHORT)
+                }
+            })
+
+        }
     }
 
     override fun onHouseholdAdded(newHousehold: Household) {
-        newHousehold.adminId = adminId
+        if (!is_admin_household_selector) {
+            return
+        }
+        newHousehold.adminId = userId
         HouseholdsService.getInstance().addHousehold(newHousehold, object: OnResultListener<String>{
             override fun onSuccess(result: String) {
                 newHousehold.id = result

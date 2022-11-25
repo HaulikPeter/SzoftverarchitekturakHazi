@@ -23,7 +23,9 @@ class LoggedInUserActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-        binding.btnJoinHousehold.setOnClickListener { }
+        binding.btnJoinHousehold.setOnClickListener {
+
+        }
         binding.btnCreateHousehold.setOnClickListener{
             intent = Intent(this, HouseHoldSelectorActivity::class.java)
             ResidentsService.getInstance().setIsAdminForResident(Firebase.auth.currentUser!!.uid, true, object: OnResultListener<Boolean> {
