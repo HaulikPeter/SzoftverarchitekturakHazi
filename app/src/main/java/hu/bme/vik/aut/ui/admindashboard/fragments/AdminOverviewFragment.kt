@@ -70,7 +70,7 @@ class AdminOverviewFragment : Fragment(),SupplyRestockListRecyclerViewAdapter.Su
                         loadingProgressBar.visibility = View.GONE
                     }
                     for (supply in supplies) {
-                        SuppliesService.getInstance().addConsumptionForSupply(supply, object: OnResultListener<Supply> {
+                        SuppliesService.getInstance().fetchConsumptionForSupply(supply, null, object: OnResultListener<Supply> {
                             override fun onSuccess(supplyWithConsumption: Supply) {
                                 requireActivity().runOnUiThread {
                                     supplyRestockListRecyclerViewAdapter.changeSupply(

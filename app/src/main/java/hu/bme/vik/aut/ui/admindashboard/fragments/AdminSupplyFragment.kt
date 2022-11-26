@@ -9,16 +9,15 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import hu.bme.vik.aut.data.Resident
 import hu.bme.vik.aut.databinding.FragmentAdminSupplyBinding
-import hu.bme.vik.aut.ui.admindashboard.adapters.supplylist.SupplyListRecyclerViewAdapter
+import hu.bme.vik.aut.ui.admindashboard.adapters.supplylist.SupplyConsumptionListRecyclerViewAdapter
 import hu.bme.vik.aut.data.Supply
 import hu.bme.vik.aut.service.OnResultListener
-import hu.bme.vik.aut.service.ResidentsService
 import hu.bme.vik.aut.service.SuppliesService
+import hu.bme.vik.aut.ui.admindashboard.adapters.supplylist.SupplyListRecyclerViewAdapter
 import kotlin.concurrent.thread
 
-class AdminSupplyFragment : Fragment(), AddSupplyDialogFragment.AddSupplyDialogFragmentListener, SupplyListRecyclerViewAdapter.SuppliesListRecyclerViewListener {
+class AdminSupplyFragment : Fragment(), AddSupplyDialogFragment.AddSupplyDialogFragmentListener,  SupplyListRecyclerViewAdapter.SuppliesListRecyclerViewListener {
     val args: AdminSupplyFragmentArgs by navArgs()
 
     lateinit var binding: FragmentAdminSupplyBinding

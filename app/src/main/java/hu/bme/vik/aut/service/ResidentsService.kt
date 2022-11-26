@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import hu.bme.vik.aut.data.Resident
 import hu.bme.vik.aut.data.ResidentStatus
+import hu.bme.vik.aut.data.Supply
 
 class ResidentsService private constructor(private val db: DatabaseReference) {
 
@@ -80,6 +81,36 @@ class ResidentsService private constructor(private val db: DatabaseReference) {
         db.child("users").child(residentId).child("status").setValue(result)
             .addOnSuccessListener { onResultListener.onSuccess(true) }
             .addOnFailureListener { onResultListener.onError(it) }
+    }
+
+    fun addConsumption(residentId: String, supply: Supply, amount: Long, onResultListener: OnResultListener<Boolean>) {
+        SuppliesService.getInstance().fetchConsumptionForSupply(supply, residentId, object: OnResultListener<Supply> {
+            override fun onSuccess(supply: Supply) {
+                val newConsumption = supply.consumption!! + amount
+                if(newConsumption >= 0 && newConsumption <= supply.stock )
+                {
+                    val newConsumptionByUser = supply.consumptionByUser!! + amount
+                    if (newConsumptionByUser >= 0 && newConsumptionByUser <= supply.stock) {
+                        db.child("users").child(residentId).child("consumption").child(supply.id!!).setValue(newConsumptionByUser).addOnSuccessListener {
+                            onResultListener.onSuccess(true)
+                        }.addOnFailureListener {
+                            onResultListener.onError(it)
+                        }
+                    }
+                    else {
+                        onResultListener.onSuccess(false)
+                        return
+                    }
+                }else {
+                    onResultListener.onSuccess(false)
+                    return
+                }
+            }
+            override fun onError(exception: Exception) {
+               onResultListener.onError(exception)
+            }
+        })
+        db.child("users").child(residentId)
     }
 
     companion object{

@@ -1,9 +1,6 @@
 package hu.bme.vik.aut.service
 
-import android.util.Log
 import com.google.firebase.database.*
-import hu.bme.vik.aut.data.Resident
-import hu.bme.vik.aut.data.ResidentStatus
 import hu.bme.vik.aut.data.Supply
 import java.util.UUID
 
@@ -16,8 +13,8 @@ class SuppliesService  private constructor(val db: DatabaseReference) {
         }.addOnFailureListener {
             onResultListener.onError(it)
         }
-
     }
+
     fun deleteSupply(supply: Supply, onResultListener: OnResultListener<Boolean>) {
         db.child("users").orderByChild("household_id").equalTo(supply.householdId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
@@ -52,10 +49,12 @@ class SuppliesService  private constructor(val db: DatabaseReference) {
             })
     }
 
-    fun addConsumptionForSupply(supply: Supply, onResultListener: OnResultListener<Supply>) {
+
+    fun fetchConsumptionForSupply(supply: Supply, residentId: String?, onResultListener: OnResultListener<Supply>) {
         db.child("users").orderByChild("household_id").equalTo(supply.householdId).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(users: DataSnapshot) {
                 var consumptionCounter: Long = 0
+                var userConsumptionCounter: Long = 0
                 if (users.value != null) {
                     val usersHashMap: HashMap<String, HashMap<String, Any>> = users.value as HashMap<String,HashMap<String, Any>>
                     for ((userId, userData) in usersHashMap) {
@@ -63,6 +62,10 @@ class SuppliesService  private constructor(val db: DatabaseReference) {
                             val consumption: HashMap<String, Any> = userData.getOrDefault("consumption", null)  as HashMap<String, Any>
                             for((consumption_id, consuptionCountOfUser) in consumption) {
                                 if (userId != null && consumption_id == supply.id) {
+
+                                    if (userId == residentId) {
+                                        userConsumptionCounter += consuptionCountOfUser as Long
+                                    }
                                     consumptionCounter +=  consuptionCountOfUser as Long
                                 }
                             }
@@ -72,6 +75,7 @@ class SuppliesService  private constructor(val db: DatabaseReference) {
                     }
                 }
                 supply.consumption = consumptionCounter
+                supply.consumptionByUser = userConsumptionCounter
                 onResultListener.onSuccess(supply)
             }
 
@@ -79,8 +83,6 @@ class SuppliesService  private constructor(val db: DatabaseReference) {
                 onResultListener.onError(Exception(error.message))
             }
         })
-
-
     }
 
     fun addSupply(supply: Supply,  onResultListener: OnResultListener<String>) {
