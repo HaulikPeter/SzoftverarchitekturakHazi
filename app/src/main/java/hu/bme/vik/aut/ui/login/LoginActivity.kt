@@ -109,15 +109,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun updateUiWithUser(model: LoggedInUserView?) {
-        val welcome = getString(R.string.welcome)
-        val displayName = model?.displayName.toString()
-        // TODO : initiate successful logged in experience
-        Toast.makeText(
-                applicationContext,
-                "$welcome $displayName",
-                Toast.LENGTH_LONG
-        ).show()
-
         val db = FirebaseDatabase.getInstance().reference
 
 
@@ -143,6 +134,7 @@ class LoginActivity : AppCompatActivity() {
                 } else {
                     val user = auth.currentUser!!
                     ResidentsService.getInstance().initUserData(user, object: OnResultListener<Boolean> {
+
                         override fun onSuccess(result: Boolean) {
                             if (result) {
                                 startActivity(Intent(this@LoginActivity, LoggedInUserActivity::class.java))

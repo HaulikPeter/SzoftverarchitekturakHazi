@@ -7,6 +7,7 @@ import android.util.Patterns
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
@@ -39,20 +40,13 @@ class LoginViewModel : ViewModel() {
                 } else if (task.exception is FirebaseTooManyRequestsException) {
                     _loginResult.value = LoginResult(error = R.string.login_failed, desc = task.exception?.message)
                 }
-                else {
-                    registerUser(auth, username, password)
-                }
             }
             .addOnFailureListener {
-                _loginResult.value = LoginResult(error = R.string.login_failed) }
-
-//        val result = loginRepository.login(username, password)
-//
-//        if (result is Result.Success) {
-//            _loginResult.value = LoginResult(success = LoggedInUserView(displayName = result.data.displayName))
-//        } else {
-//            _loginResult.value = LoginResult(error = R.string.login_failed)
-//        }
+                if (it is FirebaseAuthInvalidUserException) {
+                    registerUser(auth, username, password)
+                } else {
+                    _loginResult.value = LoginResult(error = R.string.login_failed) }
+                }
     }
 
     private fun registerUser(auth: FirebaseAuth, username: String, password: String) {
